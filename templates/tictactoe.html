@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>Tic Tac Toe vs bot with 400000 games of experience</title>
+        <link rel="stylesheet" href="/css/tictactoe.css"></link>
+        <script src="/js/jquery-3.3.1.min.js" type="text/javascript"></script>
+        <script src="/js/tictactoe.js" type="text/javascript"></script>
+    </head>
+    <body>
+        {% if name %}
+            <p>Hello {{name}} {{date}}</p>
+        {% else %}
+            <form action="/ttt" method="post">
+                your name:
+                <input type="text" name="name">
+                <input type="submit" value="Submit">
+            </form>
+        {% endif %}
+        <div id="endgame">
+            <p id="winner"></p>
+            <input id="reset" type="button" value="Play Again" onclick="reset_board()">
+        </div>
+        <script>$("#reset").hide()</script>
+        <div class="tictacbox">
+            <div class="square" id="1" onclick="if(board[0] == ' ' && !winner){$(this).text('X'); make_move(1); $(this).off('click');}"> </div>
+            <div class="vertline"></div>
+            <div class="square" id="2" onclick="if(board[1] == ' ' && !winner){$(this).text('X'); make_move(2); $(this).off('click');}"> </div>
+            <div class="vertline"></div>
+            <div class="square" id="3" onclick="if(board[2] == ' ' && !winner){$(this).text('X'); make_move(3); $(this).off('click');}"> </div>
+            <br>
+            <div class="horzline"></div>
+            <br>
+            <div class="square" id="4" onclick="if(board[3] == ' ' && !winner){$(this).text('X'); make_move(4); $(this).off('click');}"> </div>
+            <div class="vertline"></div>
+            <div class="square" id="5" onclick="if(board[4] == ' ' && !winner){$(this).text('X'); make_move(5); $(this).off('click');}"> </div>
+            <div class="vertline"></div>
+            <div class="square" id="6" onclick="if(board[5] == ' ' && !winner){$(this).text('X'); make_move(6); $(this).off('click');}"> </div>
+            <br>
+            <div class="horzline"></div>
+            <br>
+            <div class="square" id="7" onclick="if(board[6] == ' ' && !winner){$(this).text('X'); make_move(7); $(this).off('click');}"> </div>
+            <div class="vertline"></div>
+            <div class="square" id="8" onclick="if(board[7] == ' ' && !winner){$(this).text('X'); make_move(8); $(this).off('click');}"> </div>
+            <div class="vertline"></div>
+            <div class="square" id="9" onclick="if(board[8] == ' ' && !winner){$(this).text('X'); make_move(9); $(this).off('click');}"> </div>
+        </div>
+        
+    </body>
+</html>

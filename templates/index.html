@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <title>A random image every refresh</title>
+        <link rel="stylesheet" href="/css/index.css"></link>
+    </head>
+    <body>
+        <div>
+            {% if title %}
+                <p>{{title}}</p>
+            {% else %}
+                <p>Hello world</p>
+            {% endif %}
+            <img src={{image}} alt="hmmm">
+        </div>
+    </body>
+</html>

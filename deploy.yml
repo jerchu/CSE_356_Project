@@ -1,0 +1,78 @@
+---
+- hosts: databases
+  gather_facts: False
+
+  remote_user: root
+  tasks:
+    - name: Add mongo ppa key
+      become: yes
+      apt_key: >
+        keyserver=hkp://keyserver.ubuntu.com:80
+        id=9DA31620334BD75D9DCB49F368818C72E52529D4
+        state=present
+    - name: Add mongo sources list
+      become: yes
+      lineinfile: >
+        line="deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"
+        dest=/etc/apt/sources.list.d/mongodb.list
+        state=present
+        create=yes
+    - name: Install mongo
+      become: yes
+      apt: name=mongodb-org state=latest update_cache=yes
+    - name: restart mongod
+      become: yes
+      service: name=mongod state=started
+      
+
+- hosts: frontends
+  gather_facts: False
+
+  remote_user: root
+  tasks:
+    - name: clone server
+      become: yes
+      git: repo=https://github.com/jerchu/CSE_356_Warmup1.git dest=/var/www/server update=yes
+    - name: install apache2
+      become: yes
+      apt: name=apache2 update_cache=yes state=latest
+    - name: install mod_wsgi
+      become: yes
+      apt: name=libapache2-mod-wsgi-py3
+    - name: install pip3
+      become: yes
+      apt: 
+        name: python3-pip
+        update_cache: yes
+    - name: install postfix
+      become: yes
+      apt: 
+        name: postfix
+        update_cache: yes
+    - name: set domain name
+      lineinfile: >
+        line="myhostname={{inventory_hostname}}"
+        dest=/etc/postfix/main.cf
+        state=present
+        create=yes
+    - name: restart postfix
+      become: yes
+      service: name=postfix state=restarted
+    - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, and cerberus
+      become: yes
+      shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus
+    - name: copy conf file
+      become: yes
+      copy: src=/var/www/server/FlaskApp.conf dest=/etc/apache2/sites-available/server.conf remote_src=yes
+    - name: start server
+      become: yes
+      command: a2ensite server.conf
+      args:
+        creates: /etc/apache2/sites-enabled/server.conf
+    - name: disable default page
+      become: yes
+      command: a2dissite 000-default.conf
+    - name: restart apache
+      become: yes
+      service: name=apache2 state=restarted
+      

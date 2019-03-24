@@ -1,0 +1,52 @@
+body{
+    background: #bcbcbe;
+}
+
+.tictacbox{
+    margin:auto;
+    margin-top:2vmin;
+    width:80vmin;
+    height:80vmin;
+}
+
+#endgame{
+    margin:auto;
+    text-align: center;
+}
+
+#winner{
+    margin:auto;
+    font-size: 30pt;
+}
+
+#reset{
+    margin:auto;
+    font-size: 20pt;
+    background: #eae6da;
+    border-color: #eae6da;
+}
+
+.square{
+    text-align: center;
+    font-size: 24vmin;
+    vertical-align: top;
+    width:25vmin;
+    height:25vmin;
+    display:inline-block;
+}
+
+.vertline{
+    display:inline-block;
+    background:black;
+    margin-bottom:-1vmin;
+    width:1vmin;
+    height:25vmin;
+}
+
+.horzline{
+    display:inline-block;
+    background:black;
+    width:80vmin;
+    height:1vmin;
+}
+
