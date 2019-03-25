@@ -270,6 +270,7 @@ def add_question():
 
 def normalize_question_fields(question):
     question['id'] = uuid2slug(question['_id'])
+    del question['_id']
     user = users.find_one({'_id': question['user_id']}, projection={'_id': 0, 'username': 1, 'reputation': 1})
     question['user'] = user
     del question['user_id']
@@ -277,7 +278,7 @@ def normalize_question_fields(question):
 @app.route('/questions/<id>')
 def get_question(id):
     id = slug2uuid(id)
-    question = questions.find_one({'_id': id}, projection={'_id': 0})
+    question = questions.find_one({'_id': id})
     if question is not None:
         normalize_question_fields(question)
         unique_visit = False
@@ -324,9 +325,10 @@ def get_answers(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None:
-        question_answers = [x for x in answers.find(filter={'question_id':id}, projection={'_id': 0})]
+        question_answers = [x for x in answers.find(filter={'question_id':id})]
         for answer in question_answers:
             answer['id'] = answer['_id']
+            del answer['_id']
         return jsonify({'status': 'OK', 'answers': question_answers})
     return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
     
@@ -337,7 +339,7 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
-            results = [x for x in questions.find(query, limit=params['count'], projection={'_id': 0})]
+            results = [x for x in questions.find(query, limit=params['count'])]
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
