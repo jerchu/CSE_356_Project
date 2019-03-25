@@ -29,7 +29,6 @@ def slug2uuid(slug):
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-app.config.update(DEBUG=True)
 mail = Mail(app)
 agent = Learner(epsilon=0)
 agent.load_states(os.path.join(here, 'static/RL_learn/playero.pickle'))
@@ -48,7 +47,7 @@ users = db.users
 questions = db.questions
 answers = db.answers
 
-hostname='64.52.23.65'
+hostname='StackUnderflow'
 
 def login_required(f):
     @wraps(f)
@@ -182,17 +181,18 @@ def add_user():
             user_data['verified'] = False
             user_data['password'] = bcrypt.hashpw(user_data['password'], bcrypt.gensalt())
             user_data['reputation'] = 0
-            msg = Message('Verify your Tic Tac Toe Account at {}'.format(hostname),
+            msg = Message('Verify your StackUnderflow Account at {}'.format(hostname),
                 body=""" 
                 
-                Thank you for creating a Tic Tac Toe account.
+                Thank you for creating a StackUnderflow account.
                 
                 In order to activate your account, please go to http://{0}/verify and input the validation key: <{1}> or click the following link:
                 http://{0}/verify?email={2}&key={1}
                 
                 """.format(hostname, user_data['verify_key'], user_data['email']),
                 sender='<root@localhost>',
-                recipients=[user_data['email']])
+                recipients=[user_data['email']]
+            )
             users.insert_one(user_data)
             mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
