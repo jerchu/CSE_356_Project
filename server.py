@@ -313,6 +313,7 @@ def post_answer(id):
                 answer['score'] = 0
                 answer['is_accepted'] = False
                 answer['timestamp'] = time.time()
+                answers.insert_one(answer)
                 return (jsonify({'status': 'OK', 'id': uuid2slug(answer['_id'])}))
             return (jsonify({'status': 'ERROR', 'error': schemas.answer.errors}), 400)
         return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))
