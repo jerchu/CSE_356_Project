@@ -205,6 +205,8 @@ def verify_user():
         user_data = request.json
         user_data['key'] = slug2uuid(user_data['key'])
         user = users.find_one({'email': user_data['email']})
+        if user is None:
+            return (jsonify({'status': 'ERROR', 'error': 'no user exists with the email {}'.format(user_data['email'])}), 422)
         if user['verify_key'] == user_data['key'] or user_data['key'] == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204) #('OK', 204)
@@ -213,6 +215,8 @@ def verify_user():
         email = request.args.get('email')
         key = request.args.get('key')
         user = users.find_one({'email': email})
+        if user is None:
+            return (jsonify({'status': 'ERROR', 'error': 'no user exists with the email {}'.format(email)}), 422)
         if key == user['verify_key'] or key == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204)#('OK', 204)
