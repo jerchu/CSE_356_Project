@@ -345,7 +345,7 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
-            results = [x for x in questions.find(query, limit=params['count'])]
+            results = [x for x in questions.find(query, limit=params['limit'])]
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})

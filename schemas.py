@@ -59,7 +59,7 @@ search = Validator({
         'type': 'float',
         'default_setter': lambda doc: time.time(),
     },
-    'count':{
+    'limit':{
         'type': 'integer',
         'default': 25,
         'max': 100,
