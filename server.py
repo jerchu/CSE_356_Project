@@ -329,7 +329,7 @@ def get_answers(id):
         return jsonify({'status': 'OK', 'answers': question_answers})
     return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
     
-@app.route('/search', method=['POST'])
+@app.route('/search', methods=['POST'])
 def search_questions():
     if request.is_json:
         params = schemas.search.normalized(request.json)
