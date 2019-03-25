@@ -315,6 +315,7 @@ def post_answer(id):
                 answer['is_accepted'] = False
                 answer['timestamp'] = time.time()
                 answers.insert_one(answer)
+                questions.find_one_and_update({'_id': id}, {'$inc': {'answer_count': 1}})
                 return (jsonify({'status': 'OK', 'id': uuid2slug(answer['_id'])}))
             return (jsonify({'status': 'ERROR', 'error': schemas.answer.errors}), 400)
         return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))
