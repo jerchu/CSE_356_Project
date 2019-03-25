@@ -269,7 +269,7 @@ def add_question():
     return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
 
 def normalize_question_fields(question):
-    question['id'] = uuid2slug(uuid.UUID(bytes=question['_id']))
+    question['id'] = uuid2slug(question['_id'])
     user = users.find_one({'_id': question['user_id']}, projection={'_id': 0, 'username': 1, 'reputation': 1})
     question['user'] = user
     del question['user_id']
@@ -338,6 +338,7 @@ def search_questions():
             query['timestamp'] = {'$lt': params['timestamp']}
             results = [x for x in questions.find(query, limit=params['count'])]
             for question in results:
+                question['_id'] = UUID(bytes)
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
         return (jsonify({'status': 'ERROR', 'error': schemas.search.errors}), 422)
