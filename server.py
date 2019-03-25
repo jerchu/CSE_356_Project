@@ -332,7 +332,7 @@ def get_answers(id):
 def search_questions():
     if request.is_json:
         params = schemas.search.normalized(request.json)
-        if schemas.search(query):
+        if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
             query['accepted'] = params['accepted']
