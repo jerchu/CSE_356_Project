@@ -327,7 +327,7 @@ def get_answers(id):
     if question is not None:
         question_answers = [x for x in answers.find(filter={'question_id':id})]
         for answer in question_answers:
-            answer['id'] = answer['_id']
+            answer['id'] = uuid2slug(answer['_id'])
             del answer['_id']
         return jsonify({'status': 'OK', 'answers': question_answers})
     return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
