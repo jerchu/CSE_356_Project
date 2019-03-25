@@ -76,12 +76,6 @@
       apt: 
         name: postfix
         update_cache: yes
-    - name: set domain name
-      lineinfile: >
-        line="myhostname={{inventory_hostname}}"
-        dest=/etc/postfix/main.cf
-        state=present
-        create=yes
     - name: restart postfix
       become: yes
       service: name=postfix state=restarted
