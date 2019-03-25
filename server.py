@@ -169,7 +169,7 @@ def add_user():
     if request.is_json:
         users = db.users
         user_data = request.json
-        if schemas.create_user(users):
+        if schemas.create_user(user_data):
             username = users.find_one({'username': user_data['username']})
             email = users.find_one({'email': user_data['email']})
             if username is not None:
