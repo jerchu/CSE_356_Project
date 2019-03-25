@@ -338,7 +338,6 @@ def search_questions():
             query['timestamp'] = {'$lt': params['timestamp']}
             results = [x for x in questions.find(query, limit=params['count'])]
             for question in results:
-                question['_id'] = UUID(bytes)
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
         return (jsonify({'status': 'ERROR', 'error': schemas.search.errors}), 422)
