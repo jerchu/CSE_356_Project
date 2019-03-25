@@ -277,7 +277,7 @@ def normalize_question_fields(question):
 @app.route('/questions/<id>')
 def get_question(id):
     id = slug2uuid(id)
-    question = questions.find_one({'_id': id})
+    question = questions.find_one({'_id': id}, projection={'_id': 0})
     if question is not None:
         normalize_question_fields(question)
         unique_visit = False
@@ -323,7 +323,7 @@ def get_answers(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None:
-        question_answers = [x for x in answers.find(filter={'question_id':id})]
+        question_answers = [x for x in answers.find(filter={'question_id':id}, projection={'_id': 0})]
         for answer in question_answers:
             answer['id'] = answer['_id']
         return jsonify({'status': 'OK', 'answers': question_answers})
@@ -336,7 +336,7 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
-            results = [x for x in questions.find(query, limit=params['count'])]
+            results = [x for x in questions.find(query, limit=params['count'], projection={'_id': 0})]
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
