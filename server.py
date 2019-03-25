@@ -60,7 +60,7 @@ def login_required(f):
                 return (jsonify({'status': 'error', 'error': 'Account requires verification'}))
             if user is not None and session['key'] == user['key']:
                 return f(*args, **kwargs)
-        return (jsonify({'status': 'error', 'error': 'Must be logged in to access this resource'}), 401) #('UNAUTHORIZED', 401)
+        return (jsonify({'status': 'error', 'error': 'Must be logged in to access this resource'}), 200) #('UNAUTHORIZED', 401)
     return check_login
             
 
@@ -236,7 +236,7 @@ def login():
             session['username'] = data['username']
             session['key'] = user['key']
             return (jsonify({'status': 'OK'}), 201) #('OK', 201)
-        return (jsonify({'status': 'error', 'error': 'BAD LOGIN'}), 401) #('UNAUTHORIZED', 401)
+        return (jsonify({'status': 'error', 'error': 'BAD LOGIN'}), 200) #('UNAUTHORIZED', 401)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400) #('BAD REQUEST', 400)
 
 @app.route('/logout', methods=['GET', 'POST'])
