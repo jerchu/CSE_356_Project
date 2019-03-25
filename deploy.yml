@@ -26,8 +26,8 @@
     - name: bind to all ips
       become: yes
       lineinfile:
-        regexp: "bindIp:.*"
-        line: "bindIp: 0.0.0.0"
+        regexp: "  bindIp:.*"
+        line: "  bindIp: 0.0.0.0"
         dest: /etc/mongod.conf
         state: present
         create: yes
