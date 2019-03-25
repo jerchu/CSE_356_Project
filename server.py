@@ -208,7 +208,7 @@ def verify_user():
             return (jsonify({'status': 'error', 'error': 'no user exists with the email {}'.format(user_data['email'])}), 422)
         if uuid2slug(user['verify_key']) == user_data['key'] or user_data['key'] == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
-            return (jsonify({'status': 'OK'}), 204) #('OK', 204)
+            return (jsonify({'status': 'OK'}), 200) #('OK', 204)
         return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 200) #('BAD KEY', 400)
     else:
         email = request.args.get('email')
@@ -218,7 +218,7 @@ def verify_user():
             return (jsonify({'status': 'error', 'error': 'no user exists with the email {}'.format(email)}), 422)
         if key == uuid2slug(user['verify_key']) or key == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
-            return (jsonify({'status': 'OK'}), 204)#('OK', 204)
+            return (jsonify({'status': 'OK'}), 200)#('OK', 204)
         return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 200) #('BAD KEY', 400)
 
 @app.route('/login', methods=['POST'])
