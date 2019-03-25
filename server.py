@@ -227,8 +227,10 @@ def login():
     users = db.users
     if request.is_json:
         data = request.json
-        user = users.find_one({'username': data['username'], 'verified': True})
+        user = users.find_one({'username': data['username']})
         if user is not None and bcrypt.hashpw(data['password'], user['password']) == user['password']:
+            if user['verified'] == False:
+                return (jsonify({'status': 'ERROR', 'error': 'This account isnt verified'}), 403)
             if 'key' not in user:
                 user['key'] = uuid2slug(uuid.uuid4())
                 users.find_one_and_update({'username': data['username']}, {'$set': {'key': user['key']}})
