@@ -273,7 +273,7 @@ def normalize_question_fields(question):
     question['user'] = user
     del question['user_id']
 
-@app.route('/questions/<id>')
+@app.route('/questions/<regex("[0-9A-Za-z_-]{22}"):id>')
 def get_question(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
