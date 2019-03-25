@@ -185,8 +185,8 @@ def add_user():
                 body=""" 
                 Thank you for creating a StackUnderflow account.
                 
-                In order to activate your account, please go to /verify and input the validation key: <{1}>                
-                """.format(hostname, user_data['verify_key'], user_data['email']),
+                In order to activate your account, please go to /verify and input the validation key: <{}>                
+                """.format(uuid2slug(user_data['verify_key'])),
                 sender='<root@localhost>',
                 recipients=[user_data['email']]
             )
@@ -202,8 +202,9 @@ def verify_user():
     users = db.users
     if request.is_json:
         user_data = request.json
+        user_data['key'] = slug2uuid(user_data['key'])
         user = users.find_one({'email': user_data['email']})
-        if str(user['verify_key']) == user_data['key'] or user_data['key'] == 'abracadabra':
+        if user['verify_key'] == user_data['key'] or user_data['key'] == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204) #('OK', 204)
         return (jsonify({'status': 'ERROR', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
@@ -211,7 +212,7 @@ def verify_user():
         email = request.args.get('email')
         key = request.args.get('key')
         user = users.find_one({'email': email})
-        if key == str(user['verify_key']) or key == 'abracadabra':
+        if key == user['verify_key'] or key == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204)#('OK', 204)
         return (jsonify({'status': 'ERROR', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
