@@ -174,7 +174,7 @@ def add_user():
             email = users.find_one({'email': user_data['email']})
             if username is not None:
                 return (jsonify({'status': 'ERROR', 'error': 'Username already exists'}), 409)
-            if email is None:
+            if email is not None:
                 return (jsonify({'status': 'ERROR', 'error': 'Email already exists'}), 409)
             user_data['_id'] = uuid.uuid4()
             user_data['verify_key'] = uuid.uuid4()
