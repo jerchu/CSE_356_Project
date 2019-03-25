@@ -49,6 +49,7 @@ answers = db.answers
 hostname='64.52.23.65'
 
 def login_required(f):
+    @wraps(f)
     def check_login(*args, **kwargs):
         if 'username' in session and 'key' in session and session['username'] != '' and session['key'] != '':
             users = db.users

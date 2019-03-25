@@ -22,7 +22,7 @@
     - name: Install mongo
       become: yes
       apt: name=mongodb-org state=latest update_cache=yes
-    - name: restart mongod
+    - name: start mongod
       become: yes
       service: name=mongod state=started
       
