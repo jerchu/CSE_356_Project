@@ -209,7 +209,7 @@ def verify_user():
         if uuid2slug(user['verify_key']) == user_data['key'] or user_data['key'] == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204) #('OK', 204)
-        return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
+        return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 200) #('BAD KEY', 400)
     else:
         email = request.args.get('email')
         key = request.args.get('key')
@@ -219,7 +219,7 @@ def verify_user():
         if key == uuid2slug(user['verify_key']) or key == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204)#('OK', 204)
-        return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
+        return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 200) #('BAD KEY', 400)
 
 @app.route('/login', methods=['POST'])
 def login():
