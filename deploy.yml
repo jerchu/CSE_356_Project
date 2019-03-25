@@ -27,7 +27,7 @@
       become: yes
       lineinfile: >
         regexp="bind_ip[ ]*=.*"
-        line="bind_ip = 127.0.0.1,{{groups['frontends'] | join(',')}}"
+        line="bind_ip = 0.0.0.0"
         dest=/etc/mongod.conf
         state=present
         create=yes
