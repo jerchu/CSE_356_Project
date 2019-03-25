@@ -23,7 +23,7 @@
     - name: Install mongo
       become: yes
       apt: name=mongodb-org state=latest update_cache=yes
-    - name: setup remote connection to frontends
+    - name: bind to all ips
       become: yes
       lineinfile: >
         regexp="bind_ip[ ]*=.*"
@@ -31,6 +31,18 @@
         dest=/etc/mongod.conf
         state=present
         create=yes
+    - name: allow access from frontends
+      become: yes
+      iptables: 
+        chain: INPUT
+        source: "{{item}}"
+        protocol: tcp
+        destination_port: 27017
+        match: state
+        ctstate: NEW,ESTABLISHED
+        jump: ACCEPT
+        state: present
+      loop: "{{groups['frontends']}}"
     - name: restart mongod
       become: yes
       service: name=mongod state=restarted
