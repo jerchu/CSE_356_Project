@@ -183,12 +183,9 @@ def add_user():
             user_data['reputation'] = 0
             msg = Message('Verify your StackUnderflow Account at {}'.format(hostname),
                 body=""" 
-                
                 Thank you for creating a StackUnderflow account.
                 
-                In order to activate your account, please go to http://{0}/verify and input the validation key: <{1}> or click the following link:
-                http://{0}/verify?email={2}&key={1}
-                
+                In order to activate your account, please go to /verify and input the validation key: <{1}>                
                 """.format(hostname, user_data['verify_key'], user_data['email']),
                 sender='<root@localhost>',
                 recipients=[user_data['email']]
