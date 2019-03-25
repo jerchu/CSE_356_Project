@@ -270,7 +270,7 @@ def add_question():
             question['accepted_answer_id'] = None
             questions.insert_one(question)
             return (jsonify({'status': 'OK', 'id': uuid2slug(question['_id'])}), 201)
-        return (jsonify({'status': 'error', 'error': schemas.question.errors}), 422)
+        return (jsonify({'status': 'error', 'error': schemas.question.errors}), 200)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
 def normalize_question_fields(question):
@@ -322,7 +322,7 @@ def post_answer(id):
                 answers.insert_one(answer)
                 questions.find_one_and_update({'_id': id}, {'$inc': {'answer_count': 1}})
                 return (jsonify({'status': 'OK', 'id': uuid2slug(answer['_id'])}))
-            return (jsonify({'status': 'error', 'error': schemas.answer.errors}), 400)
+            return (jsonify({'status': 'error', 'error': schemas.answer.errors}), 200)
         return (jsonify({'status': 'error', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
@@ -349,7 +349,7 @@ def search_questions():
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
-        return (jsonify({'status': 'error', 'error': schemas.search.errors}), 422)
+        return (jsonify({'status': 'error', 'error': schemas.search.errors}), 200)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
 
