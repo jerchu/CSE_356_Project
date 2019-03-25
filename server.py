@@ -337,10 +337,10 @@ def search_questions():
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
             query['accepted'] = params['accepted']
-            questions = [x for x in questions.find(query, limit=params['count'])]
-            for question in questions:
+            results = [x for x in questions.find(query, limit=params['count'])]
+            for question in results:
                 normalize_question_fields(question)
-            return jsonify({'status': 'OK', 'questions': questions})
+            return jsonify({'status': 'OK', 'questions': results})
         return (jsonify({'status': 'ERROR', 'error': schemas.search.errors}), 422)
     return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
 
