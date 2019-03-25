@@ -336,7 +336,6 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
-            query['accepted'] = params['accepted']
             results = [x for x in questions.find(query, limit=params['count'])]
             for question in results:
                 normalize_question_fields(question)
