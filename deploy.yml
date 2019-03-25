@@ -80,5 +80,7 @@
       command: a2dissite 000-default.conf
     - name: restart apache
       become: yes
-      service: name=apache2 state=restarted
+      service: name=apache2 state=stopped
+    - become: yes
+      service: name=apache2 state=started
       
