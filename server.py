@@ -325,7 +325,7 @@ def get_answers(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None:
-        question_answers = [x for x in answers.find(filter={'question_id':id}, projection{'question_id': 0})]
+        question_answers = [x for x in answers.find(filter={'question_id':id}, projection={'question_id': 0})]
         for answer in question_answers:
             answer['id'] = uuid2slug(answer['_id'])
             del answer['_id']
