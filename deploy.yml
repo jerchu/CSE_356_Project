@@ -4,6 +4,8 @@
 
   remote_user: root
   tasks:
+    - name: install gnupg
+      apt: name=gnupg state=latest update_cache=yes
     - name: Add mongo ppa key
       become: yes
       apt_key: >
@@ -30,9 +32,12 @@
 
   remote_user: root
   tasks:
+    - name: install git
+      become: yes
+      apt: name=git state=latest update_cache=yes
     - name: clone server
       become: yes
-      git: repo=https://github.com/jerchu/CSE_356_Warmup1.git dest=/var/www/server update=yes
+      git: repo=https://github.com/jerchu/CSE_356_Project.git dest=/var/www/server update=yes
     - name: install apache2
       become: yes
       apt: name=apache2 update_cache=yes state=latest
@@ -43,6 +48,7 @@
       become: yes
       apt: 
         name: python3-pip
+        state: latest
         update_cache: yes
     - name: install postfix
       become: yes
