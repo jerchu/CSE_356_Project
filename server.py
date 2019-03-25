@@ -29,6 +29,7 @@ def slug2uuid(slug):
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.config.update(DEBUG=True)
 mail = Mail(app)
 agent = Learner(epsilon=0)
 agent.load_states(os.path.join(here, 'static/RL_learn/playero.pickle'))
