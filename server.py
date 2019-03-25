@@ -192,8 +192,8 @@ def add_user():
                 """.format(hostname, user_data['verify_key'], user_data['email']),
                 sender='<root@localhost>',
                 recipients=[user_data['email']])
-            mail.send(msg)
             users.insert_one(user_data)
+            mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
         return (jsonify({'status': 'ERROR', 'error': schemas.create_user.errors}), 422)
     return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)

@@ -15,6 +15,7 @@
     - name: Add mongo sources list
       become: yes
       lineinfile: >
+        regexp="bind_ip[ ]*=.*"
         line="deb http://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse"
         dest=/etc/apt/sources.list.d/mongodb.list
         state=present
@@ -22,9 +23,17 @@
     - name: Install mongo
       become: yes
       apt: name=mongodb-org state=latest update_cache=yes
-    - name: start mongod
+    - name: setup remote connection to frontends
       become: yes
-      service: name=mongod state=started
+      lineinfile: >
+        regexp="bind_ip[ ]*=.*"
+        line="bind_ip = 127.0.0.1,{{groups['frontends'] | join(',')}}"
+        dest=/etc/mongod.conf
+        state=present
+        create=yes
+    - name: restart mongod
+      become: yes
+      service: name=mongod state=restarted
       
 
 - hosts: frontends
