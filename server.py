@@ -318,7 +318,7 @@ def post_answer(id):
         return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))
     return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
 
-@app.route('/question/<id>/answers')
+@app.route('/questions/<id>/answers')
 def get_answers(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
