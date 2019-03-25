@@ -57,10 +57,10 @@ def login_required(f):
             users = db.users
             user = users.find_one({'username': session['username']})
             if user['verified'] == False:
-                return (jsonify({'status': 'ERROR', 'error': 'Account requires verification'}))
+                return (jsonify({'status': 'error', 'error': 'Account requires verification'}))
             if user is not None and session['key'] == user['key']:
                 return f(*args, **kwargs)
-        return (jsonify({'status': 'ERROR', 'error': 'Must be logged in to access this resource'}), 401) #('UNAUTHORIZED', 401)
+        return (jsonify({'status': 'error', 'error': 'Must be logged in to access this resource'}), 401) #('UNAUTHORIZED', 401)
     return check_login
             
 
@@ -98,13 +98,13 @@ def play_game():
             users = db.users
             user = users.find_one({'username': request.cookies.get('username'), 'verified': True})
             if user is None:
-                return jsonify({'status': 'ERROR'})
+                return jsonify({'status': 'error'})
             board = user['current_game']
             move = request.json['move']
             if move is None:
                 return jsonify({'grid': board})
             if board[move] != ' ':
-                return jsonify({'status': 'ERROR'})
+                return jsonify({'status': 'error'})
             board[move] = 'X'
             if 'start_date' not in user:
                 users.find_one_and_update({'username': user['username']}, {'$set':{'start_date': datetime.datetime.now()}})
@@ -174,9 +174,9 @@ def add_user():
             username = users.find_one({'username': user_data['username']})
             email = users.find_one({'email': user_data['email']})
             if username is not None:
-                return (jsonify({'status': 'ERROR', 'error': 'Username already exists'}), 409)
+                return (jsonify({'status': 'error', 'error': 'Username already exists'}), 409)
             if email is not None:
-                return (jsonify({'status': 'ERROR', 'error': 'Email already exists'}), 409)
+                return (jsonify({'status': 'error', 'error': 'Email already exists'}), 409)
             user_data['_id'] = uuid.uuid4()
             user_data['verify_key'] = uuid.uuid4()
             user_data['verified'] = False
@@ -194,8 +194,8 @@ def add_user():
             users.insert_one(user_data)
             mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
-        return (jsonify({'status': 'ERROR', 'error': schemas.create_user.errors}), 422)
-    return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
+        return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
+    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
             
 
 @app.route('/verify', methods=['POST', 'GET'])
@@ -206,21 +206,21 @@ def verify_user():
         user_data['key'] = slug2uuid(user_data['key'])
         user = users.find_one({'email': user_data['email']})
         if user is None:
-            return (jsonify({'status': 'ERROR', 'error': 'no user exists with the email {}'.format(user_data['email'])}), 422)
+            return (jsonify({'status': 'error', 'error': 'no user exists with the email {}'.format(user_data['email'])}), 422)
         if user['verify_key'] == user_data['key'] or user_data['key'] == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204) #('OK', 204)
-        return (jsonify({'status': 'ERROR', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
+        return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
     else:
         email = request.args.get('email')
         key = request.args.get('key')
         user = users.find_one({'email': email})
         if user is None:
-            return (jsonify({'status': 'ERROR', 'error': 'no user exists with the email {}'.format(email)}), 422)
+            return (jsonify({'status': 'error', 'error': 'no user exists with the email {}'.format(email)}), 422)
         if key == user['verify_key'] or key == 'abracadabra':
             users.find_one_and_update({'email': user_data['email']}, {'$set':{'verified': True}})
             return (jsonify({'status': 'OK'}), 204)#('OK', 204)
-        return (jsonify({'status': 'ERROR', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
+        return (jsonify({'status': 'error', 'error': 'BAD KEY'}), 422) #('BAD KEY', 400)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -230,15 +230,15 @@ def login():
         user = users.find_one({'username': data['username']})
         if user is not None and bcrypt.hashpw(data['password'], user['password']) == user['password']:
             if user['verified'] == False:
-                return (jsonify({'status': 'ERROR', 'error': 'This account isnt verified'}), 403)
+                return (jsonify({'status': 'error', 'error': 'This account isnt verified'}), 200)
             if 'key' not in user:
                 user['key'] = uuid2slug(uuid.uuid4())
                 users.find_one_and_update({'username': data['username']}, {'$set': {'key': user['key']}})
             session['username'] = data['username']
             session['key'] = user['key']
             return (jsonify({'status': 'OK'}), 201) #('OK', 201)
-        return (jsonify({'status': 'ERROR', 'error': 'BAD LOGIN'}), 401) #('UNAUTHORIZED', 401)
-    return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400) #('BAD REQUEST', 400)
+        return (jsonify({'status': 'error', 'error': 'BAD LOGIN'}), 401) #('UNAUTHORIZED', 401)
+    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400) #('BAD REQUEST', 400)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -249,7 +249,7 @@ def logout():
         session['username']  = ''
         session['key'] = ''
         return jsonify({'status': 'OK'})
-    return (jsonify({'status': 'ERROR', 'error': 'BAD SESSION, you may already be logged out'}), 400)
+    return (jsonify({'status': 'error', 'error': 'BAD SESSION, you may already be logged out'}), 400)
 
 @app.route('/questions/add', methods=['POST'])
 @login_required
@@ -271,8 +271,8 @@ def add_question():
             question['accepted_answer_id'] = None
             questions.insert_one(question)
             return (jsonify({'status': 'OK', 'id': uuid2slug(question['_id'])}), 201)
-        return (jsonify({'status': 'ERROR', 'error': schemas.question.errors}), 422)
-    return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
+        return (jsonify({'status': 'error', 'error': schemas.question.errors}), 422)
+    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
 def normalize_question_fields(question):
     question['id'] = uuid2slug(question['_id'])
@@ -301,7 +301,7 @@ def get_question(id):
             questions.find_one_and_update({'_id': id}, {'$inc': {'view_count': 1}, '$push': {'viewers': add_visitor}})
         del question['viewers']
         return (jsonify({'status': 'OK', 'question': question}), 200)
-    return (jsonify({'status': 'ERROR', 'error': 'PAGE NOT FOUND'}), 404)
+    return (jsonify({'status': 'error', 'error': 'PAGE NOT FOUND'}), 404)
 
 @app.route('/questions/<id>/answers/add', methods=['POST'])
 @login_required
@@ -323,9 +323,9 @@ def post_answer(id):
                 answers.insert_one(answer)
                 questions.find_one_and_update({'_id': id}, {'$inc': {'answer_count': 1}})
                 return (jsonify({'status': 'OK', 'id': uuid2slug(answer['_id'])}))
-            return (jsonify({'status': 'ERROR', 'error': schemas.answer.errors}), 400)
-        return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))
-    return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
+            return (jsonify({'status': 'error', 'error': schemas.answer.errors}), 400)
+        return (jsonify({'status': 'error', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))
+    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
 @app.route('/questions/<id>/answers')
 def get_answers(id):
@@ -337,7 +337,7 @@ def get_answers(id):
             answer['id'] = uuid2slug(answer['_id'])
             del answer['_id']
         return jsonify({'status': 'OK', 'answers': question_answers})
-    return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
+    return (jsonify({'status': 'error', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
     
 @app.route('/search', methods=['POST'])
 def search_questions():
@@ -350,8 +350,8 @@ def search_questions():
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
-        return (jsonify({'status': 'ERROR', 'error': schemas.search.errors}), 422)
-    return (jsonify({'status': 'ERROR', 'error': 'Request type must be JSON'}), 400)
+        return (jsonify({'status': 'error', 'error': schemas.search.errors}), 422)
+    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
 
 def evaluate_state(board):
