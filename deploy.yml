@@ -25,12 +25,12 @@
       apt: name=mongodb-org state=latest update_cache=yes
     - name: bind to all ips
       become: yes
-      lineinfile: >
-        regexp="bind_ip[ ]*=.*"
-        line="bind_ip = 0.0.0.0"
-        dest=/etc/mongod.conf
-        state=present
-        create=yes
+      lineinfile:
+        regexp: "bindIp:.*"
+        line: "bindIp: 0.0.0.0"
+        dest: /etc/mongod.conf
+        state: present
+        create: yes
     - name: allow access from frontends
       become: yes
       iptables: 
