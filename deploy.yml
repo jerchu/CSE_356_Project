@@ -76,9 +76,9 @@
       apt: 
         name: postfix
         update_cache: yes
-    - name: restart postfix
+    - name: reload postfix
       become: yes
-      service: name=postfix state=restarted
+      service: name=postfix state=reloaded
     - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, and cerberus
       become: yes
       shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus
