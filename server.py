@@ -349,7 +349,7 @@ def search_questions():
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
-        return (jsonify({'status': 'error', 'error': schemas.search.errors}), 200)
+        return (jsonify({'status': 'error', 'error': schemas.search.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
 
