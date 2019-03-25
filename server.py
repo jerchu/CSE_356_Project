@@ -7,6 +7,7 @@ from functools import wraps
 from flask import Flask, render_template, request, jsonify, make_response, session
 from flask_mail import Mail, Message
 import datetime
+import time
 import random
 from pymongo import MongoClient
 import bcrypt
@@ -259,7 +260,7 @@ def add_question():
             question['score'] = 0
             question['view_count'] = 0
             question['answer_count'] = 0
-            question['timestamp'] = datetime.datetime.now().timestamp()
+            question['timestamp'] = time.time()
             question['viewers'] = []
             question['accepted_answer_id'] = None
             questions.insert_one(question)
@@ -311,7 +312,7 @@ def post_answer(id):
                 answer['user'] = user['username']
                 answer['score'] = 0
                 answer['is_accepted'] = False
-                answer['timestamp'] = datetime.datetime.now().timestamp()
+                answer['timestamp'] = time.time()
                 return (jsonify({'status': 'OK', 'id': uuid2slug(answer['_id'])}))
             return (jsonify({'status': 'ERROR', 'error': schemas.answer.errors}), 400)
         return (jsonify({'status': 'ERROR', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}))

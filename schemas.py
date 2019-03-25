@@ -1,6 +1,6 @@
 from cerberus import Validator, TypeDefinition
 from uuid import UUID
-import datetime
+import time
 
 uuid_type = TypeDefinition('uuid', (UUID), ())
 
@@ -56,8 +56,8 @@ answer = Validator({
 
 search = Validator({
     'timestamp': {
-        'type': 'datetime',
-        'default_setter': lambda doc: datetime.datetime.now().timestamp(),
+        'type': 'float',
+        'default_setter': lambda doc: time.time(),
     },
     'count':{
         'type': 'integer',
