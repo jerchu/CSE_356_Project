@@ -57,7 +57,7 @@ answer = Validator({
 search = Validator({
     'timestamp': {
         'type': 'datetime',
-        'default_setter': datetime.datetime.now().timestamp(),
+        'default_setter': lambda doc: datetime.datetime.now().timestamp(),
     },
     'count':{
         'type': 'integer',
