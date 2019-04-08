@@ -280,10 +280,18 @@ def normalize_question_fields(question):
     question['user'] = user
     del question['user_id']
 
-@app.route('/questions/<id>')
-def get_question(id):
+@app.route('/questions/<id>', methods=['GET', 'DELETE'])
+def get_or_delete_question(id):    
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
+    if request.method == 'DELETE':
+        if 'username' in session:
+            user = users.find_one({'username': session['username']})
+            if user['_id'] == question['user_id']:
+                questions.find_one_and_delete({'_id': id})
+                return jsonify({'status': 'OK'})
+            return jsonify({'status': 'error', 'error': 'You do not have permission to delete this question'}, 403)
+        return jsonify({'status': 'error', 'error': 'Must be logged in to delete questions'}, 403)
     if question is not None:
         normalize_question_fields(question)
         unique_visit = False
@@ -345,6 +353,8 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
+            if 'q' in params:
+                query['$text'] = {'$search': params['q']}
             results = [x for x in questions.find(query, limit=params['limit'])]
             for question in results:
                 normalize_question_fields(question)
@@ -353,6 +363,28 @@ def search_questions():
         return (jsonify({'status': 'error', 'error': schemas.search.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
+@app.route('/username/<username>')
+def get_user(username):
+    user = users.find_one(filter={'username': username}, projection={'email': 1, 'reputation': 1})
+    if user is not None:
+        return jsonify({'status': 'OK', 'user': user}, 200)
+    return jsonify({'status': 'error', 'error': 'No user with username "{}"'.format(username)}, 404)
+        
+@app.route('/username/<username>/questions')
+def get_user_questions(username):
+    user = users.find_one({'username': username}, projection={'_id': 1})
+    if user is not None:
+        user_questions = questions.find({'user_id': user['_id']})
+        return jsonify({'status': 'OK', 'questions': user_questions})
+    return jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)})
+
+@app.route('/username/<username>/answers')
+def get_user_answers(username):
+    user = users.find_one({'username': username})
+    if user is not None:
+        user_answers = answers.find({'user': username}, projection={'_id': 1})
+        return jsonify({'status': 'OK', 'answers': user_answers})
+    return jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)})
 
 def evaluate_state(board):
     for i in range(3):

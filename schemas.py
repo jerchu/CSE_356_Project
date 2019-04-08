@@ -65,4 +65,7 @@ search = Validator({
         'max': 100,
         'min': 0,
     },
+    'q':{
+        'type': 'string',
+    }
 })
