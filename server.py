@@ -367,24 +367,24 @@ def search_questions():
 def get_user(username):
     user = users.find_one(filter={'username': username}, projection={'email': 1, 'reputation': 1})
     if user is not None:
-        return jsonify({'status': 'OK', 'user': user}, 200)
-    return jsonify({'status': 'error', 'error': 'No user with username "{}"'.format(username)}, 404)
+        return (jsonify({'status': 'OK', 'user': user}), 200)
+    return (jsonify({'status': 'error', 'error': 'No user with username "{}"'.format(username)}), 404)
         
 @app.route('/username/<username>/questions')
 def get_user_questions(username):
     user = users.find_one({'username': username}, projection={'_id': 1})
     if user is not None:
-        user_questions = questions.find({'user_id': user['_id']})
+        user_questions = [x for x in questions.find({'user_id': user['_id']})]
         return jsonify({'status': 'OK', 'questions': user_questions})
-    return jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)})
+    return (jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)}), 404)
 
 @app.route('/username/<username>/answers')
 def get_user_answers(username):
     user = users.find_one({'username': username})
     if user is not None:
-        user_answers = answers.find({'user': username}, projection={'_id': 1})
+        user_answers = [x for x in answers.find({'user': username}, projection={'_id': 1})]
         return jsonify({'status': 'OK', 'answers': user_answers})
-    return jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)})
+    return (jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)}), 404)
 
 def evaluate_state(board):
     for i in range(3):
