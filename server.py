@@ -372,9 +372,9 @@ def get_user(username):
         
 @app.route('/username/<username>/questions')
 def get_user_questions(username):
-    user = users.find_one({'username': username}, projection={'_id': 1})
+    user = users.find_one({'username': username})
     if user is not None:
-        user_questions = [x for x in questions.find({'user_id': user['_id']})]
+        user_questions = [x for x in questions.find({'user_id': user['_id']}, projection={'_id': 1})]
         return jsonify({'status': 'OK', 'questions': user_questions})
     return (jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)}), 404)
 
