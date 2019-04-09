@@ -377,10 +377,7 @@ def get_user(username):
 def get_user_questions(username):
     user = users.find_one({'username': username})
     if user is not None:
-        user_questions = [x for x in questions.find({'user_id': user['_id']}, projection={'_id': 1})]
-        for question in user_questions:
-            question['id'] = uuid2slug(question['_id'])
-            del question['_id']
+        user_questions = [uuid2slug(x['_id']) for x in questions.find({'user_id': user['_id']}, projection={'_id': 1})]
         return jsonify({'status': 'OK', 'questions': user_questions})
     return (jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)}), 200)
 
@@ -388,10 +385,7 @@ def get_user_questions(username):
 def get_user_answers(username):
     user = users.find_one({'username': username})
     if user is not None:
-        user_answers = [x for x in answers.find({'user': username}, projection={'_id': 1})]
-        for answer in user_answers:
-            answer['id'] = uuid2slug(answer['_id'])
-            del answer['_id']
+        user_answers = [uuid2slug(x['_id']) for x in answers.find({'user': username}, projection={'_id': 1})]
         return jsonify({'status': 'OK', 'answers': user_answers})
     return (jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)}), 200)
 

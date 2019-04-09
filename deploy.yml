@@ -104,9 +104,9 @@
 
   remote_user: root
   become: yes
-  roles:
-    - role: nginxinc.nginx
   tasks:
+    - name: install nginx
+      apt: name=nginx state=latest
     - name: Setup nginx conf
       template:
         src=nginx.conf.tpl
