@@ -99,7 +99,10 @@
     - become: yes
       service: name=apache2 state=started
 
-- hosts: nginx
+- hosts: balancers
+  gather_facts: False
+
+  remote_user: root
   become: yes
   roles:
     - role: nginxinc.nginx

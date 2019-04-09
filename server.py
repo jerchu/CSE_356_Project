@@ -388,7 +388,7 @@ def get_user_questions(username):
 def get_user_answers(username):
     user = users.find_one({'username': username})
     if user is not None:
-        user_answers = [x for x['_id'] in answers.find({'user': username}, projection={'_id': 1})]
+        user_answers = [x for x in answers.find({'user': username}, projection={'_id': 1})]
         for answer in user_answers:
             answer['id'] = uuid2slug(answer['_id'])
             del answer['_id']
