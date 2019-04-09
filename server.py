@@ -39,7 +39,6 @@ with open(os.path.join(here, 'static/images.csv'), 'r') as f:
 
 import logging
 streamhndlr = logging.StreamHandler()
-app.logger.addHandler(streamhndlr)
 app.logger.setLevel(logging.INFO)
 
 client = MongoClient('64.190.90.55', 27017)
@@ -357,7 +356,7 @@ def search_questions():
                 query['$text'] = {'$search': params['q']}
                 app.logger.info('query is {}'.format(params['q']))
             if 'q' in params and params['q'].strip() == "":
-                app.logger.info('\'{}\' is an empty string, ignoring')
+                app.logger.info('\'{}\' is an empty string, ignoring'.format(params['q']))
             results = [x for x in questions.find(query, limit=params['limit'])]
             app.logger.info('returned {} items'.format(len(results)))
             for question in results:
