@@ -1,3 +1,5 @@
+events { }
+
 http {
     upstream myapp1 {
         server 64.52.23.65;

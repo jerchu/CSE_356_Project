@@ -284,7 +284,7 @@ def get_or_delete_question(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None and request.method == 'DELETE':
-        if 'username' in session:
+        if 'username' in session and session['username'] != '':
             user = users.find_one({'username': session['username']})
             if user['_id'] == question['user_id']:
                 questions.find_one_and_delete({'_id': id})
