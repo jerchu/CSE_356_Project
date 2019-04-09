@@ -355,11 +355,13 @@ def search_questions():
             query['timestamp'] = {'$lt': params['timestamp']}
             if 'q' in params and params['q'].strip() != "":
                 query['$text'] = {'$search': params['q']}
+                app.logger.info('query is {}'.format(params['q']))
             results = [x for x in questions.find(query, limit=params['limit'])]
+            app.logger.info('returned {}'.format(results))
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
-        app.logger.info(schemas.search.errors)
+        app.logger.error(schemas.search.errors)
         return (jsonify({'status': 'error', 'error': schemas.search.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
