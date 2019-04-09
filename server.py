@@ -356,6 +356,8 @@ def search_questions():
             if 'q' in params and params['q'].strip() != "":
                 query['$text'] = {'$search': params['q']}
                 app.logger.info('query is {}'.format(params['q']))
+            if 'q' in params and params['q'].strip() == "":
+                app.logger.info('\'{}\' is an empty string, ignoring')
             results = [x for x in questions.find(query, limit=params['limit'])]
             app.logger.info('returned {}'.format(results))
             for question in results:
