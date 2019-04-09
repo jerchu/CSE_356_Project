@@ -180,7 +180,7 @@ def add_user():
             user_data['verify_key'] = uuid.uuid4()
             user_data['verified'] = False
             user_data['password'] = bcrypt.hashpw(user_data['password'], bcrypt.gensalt())
-            user_data['reputation'] = 0
+            user_data['reputation'] = 1
             msg = Message('Verify your StackUnderflow Account at {}'.format(hostname),
                 body=""" 
                 Thank you for creating a StackUnderflow account.
