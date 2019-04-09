@@ -354,9 +354,9 @@ def search_questions():
             query['timestamp'] = {'$lt': params['timestamp']}
             if 'q' in params and params['q'].strip() != "":
                 query['$text'] = {'$search': params['q']}
-                app.logger.info('query is {}'.format(params['q']))
             if 'q' in params and params['q'].strip() == "":
                 app.logger.info('\'{}\' is an empty string, ignoring'.format(params['q']))
+            app.logger.info('query is {}'.format(params))
             results = [x for x in questions.find(query, limit=params['limit'])]
             app.logger.info('returned {} items'.format(len(results)))
             for question in results:
