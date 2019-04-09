@@ -284,12 +284,16 @@ def get_or_delete_question(id):
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None and request.method == 'DELETE':
-        if 'username' in session and session['username'] != '':
+        if 'username' in session and 'key' in session and session['username'] != '' and session['key'] != '':
             user = users.find_one({'username': session['username']})
-            if user['_id'] == question['user_id']:
-                questions.find_one_and_delete({'_id': id})
-                return jsonify({'status': 'OK'})
-            return jsonify({'status': 'error', 'error': 'You do not have permission to delete this question'}, 403)
+            if user['verified'] == False:
+                return (jsonify({'status': 'error', 'error': 'Account requires verification'}))
+            if user is not None and session['key'] == user['key']:
+                user = users.find_one({'username': session['username']})
+                if user['_id'] == question['user_id']:
+                    questions.find_one_and_delete({'_id': id})
+                    return jsonify({'status': 'OK'})
+                return jsonify({'status': 'error', 'error': 'You do not have permission to delete this question'}, 403)
         return jsonify({'status': 'error', 'error': 'Must be logged in to delete questions'}, 403)
     if question is not None:
         normalize_question_fields(question)
