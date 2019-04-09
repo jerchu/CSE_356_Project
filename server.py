@@ -366,14 +366,14 @@ def search_questions():
         return (jsonify({'status': 'error', 'error': schemas.search.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
-@app.route('/username/<username>')
+@app.route('/user/<username>')
 def get_user(username):
     user = users.find_one(filter={'username': username}, projection={'email': 1, 'reputation': 1})
     if user is not None:
         return (jsonify({'status': 'OK', 'user': user}), 200)
     return (jsonify({'status': 'error', 'error': 'No user with username "{}"'.format(username)}), 404)
         
-@app.route('/username/<username>/questions')
+@app.route('/user/<username>/questions')
 def get_user_questions(username):
     user = users.find_one({'username': username})
     if user is not None:
@@ -381,7 +381,7 @@ def get_user_questions(username):
         return jsonify({'status': 'OK', 'questions': user_questions})
     return (jsonify({'status': 'error', 'error': 'no user with username "{}"'.format(username)}), 404)
 
-@app.route('/username/<username>/answers')
+@app.route('/user/<username>/answers')
 def get_user_answers(username):
     user = users.find_one({'username': username})
     if user is not None:
