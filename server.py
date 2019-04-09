@@ -353,7 +353,7 @@ def search_questions():
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
             if 'q' in params and params['q'].strip() != "":
-                query['$text'] = {'$search': params['q']}
+                query['$text'] = {'$search': params['q'], '$language': 'none'}
             if 'q' in params and params['q'].strip() == "":
                 app.logger.info('\'{}\' is an empty string, ignoring'.format(params['q']))
             app.logger.info('query is {}'.format(params))
