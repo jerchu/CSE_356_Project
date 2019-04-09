@@ -359,7 +359,7 @@ def search_questions():
             if 'q' in params and params['q'].strip() == "":
                 app.logger.info('\'{}\' is an empty string, ignoring')
             results = [x for x in questions.find(query, limit=params['limit'])]
-            app.logger.info('returned {}'.format(results))
+            app.logger.info('returned {} items'.format(len(results)))
             for question in results:
                 normalize_question_fields(question)
             return jsonify({'status': 'OK', 'questions': results})
