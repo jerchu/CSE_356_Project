@@ -103,32 +103,12 @@
   become: yes
   roles:
     - role: nginxinc.nginx
-  vars:
-    nginx_http_template_enable: true
-    nginx_http_template:
-      default:
-        template_file: http/default.conf.j2
-        conf_file_name: default.conf
-        conf_file_location: /etc/nginx/conf.d/
-        port: 80
-        server_name: localhost
-        error_page: /usr/share/nginx/html
-        autoindex: false
-        reverse_proxy:
-          locations:
-            frontend:
-              location: /
-              proxy_pass: http://frontend_servers
-        upstreams:
-          upstream_1:
-            name: frontend_servers
-            lb_method: least_conn
-            zone_name: frontend
-            zone_size: 64k
-            sticky_cookie: false
-            servers:
-              frontend_server_1:
-                address: localhost
-                port: 80
-                weight: 1
-                health_check: max_fails=3 fail_timeout=5s
+  tasks:
+    - name: Setup nginx conf
+      template:
+        src=nginx.conf.tpl
+        dest=/etc/nginx/nginx.conf
+    - name: Reload Nginx
+      service:
+        name=nginx
+        state=reloaded
