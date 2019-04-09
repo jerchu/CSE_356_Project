@@ -353,7 +353,7 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
-            if 'q' in params:
+            if 'q' in params and params['q'].strip() != "":
                 query['$text'] = {'$search': params['q']}
             results = [x for x in questions.find(query, limit=params['limit'])]
             for question in results:
