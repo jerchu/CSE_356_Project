@@ -311,7 +311,7 @@ def get_or_delete_question(id):
             questions.find_one_and_update({'_id': id}, {'$inc': {'view_count': 1}, '$push': {'viewers': add_visitor}})
         del question['viewers']
         return (jsonify({'status': 'OK', 'question': question}), 200)
-    return (jsonify({'status': 'error', 'error': 'PAGE NOT FOUND'}), 404)
+    return (jsonify({'status': 'error', 'error': 'PAGE NOT FOUND'}), 200)
 
 @app.route('/questions/<id>/answers/add', methods=['POST'])
 @login_required
