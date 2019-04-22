@@ -49,6 +49,9 @@
     - name: restart mongod
       become: yes
       service: name=mongod state=restarted
+    - name: restart cassandra
+      become: yes
+      service: name=cassandra state=restarted
       
 
 - hosts: frontends

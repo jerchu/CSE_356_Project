@@ -54,7 +54,9 @@ questions = db.questions
 answers = db.answers
 
 cluster = Cluster(['64.190.90.55'])
-sesh = cluster.connect('stcku')
+sesh = cluster.connect()
+sesh.execute("CREATE KEYSPACE IF NOT EXISTS stcku WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '2' }")
+sesh.set_keyspace('stcku')
 sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, content blob )')
 
 hostname='StackUnderflow'
