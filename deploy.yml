@@ -88,10 +88,12 @@
     - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, cerberus, and cassandra-driver
       become: yes
       shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus cassandra-driver
+      environment:
+        CASS_DRIVER_NO_CYTHON: 1
     - name: copy conf file
       become: yes
       copy: src=/var/www/server/FlaskApp.conf dest=/etc/apache2/sites-available/server.conf remote_src=yes
-    - name: start server
+    - name: enable server
       become: yes
       command: a2ensite server.conf
       args:

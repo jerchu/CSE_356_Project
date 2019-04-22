@@ -247,7 +247,7 @@ def login():
                 users.find_one_and_update({'username': data['username']}, {'$set': {'key': user['key']}})
             session['username'] = data['username']
             session['key'] = user['key']
-            return (jsonify({'status': 'OK'}), 201) #('OK', 201)
+            return (jsonify({'status': 'OK'}), 200) #('OK', 201)
         return (jsonify({'status': 'error', 'error': 'BAD LOGIN'}), 403) #('UNAUTHORIZED', 401)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400) #('BAD REQUEST', 400)
 
@@ -387,7 +387,7 @@ def search_questions():
             if 'q' in params and params['q'].strip() == "":
                 app.logger.info('\'{}\' is an empty string, ignoring'.format(params['q']))
             app.logger.info('query is {}'.format(params))
-            results = [x for x in questions.find(query, limit=params['limit']).sort(params['sort_by'])]
+            results = [x for x in questions.find(query, limit=params['limit']).sort(params['sort_by'], -1)]
             app.logger.info('returned {} items'.format(len(results)))
             for question in results:
                 normalize_question_fields(question)

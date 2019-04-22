@@ -2,8 +2,8 @@ events { }
 
 http {
     upstream myapp1 {
-        server 64.52.23.65;
-		server 64.52.23.172;
+        server 64.52.163.95;
+		server 64.52.163.190;
     }
 
     server {
