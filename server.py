@@ -266,6 +266,7 @@ def logout():
 def add_question():
     if request.is_json:
         data = request.json
+        app.logger.info('question: {}'.format(data))
         if schemas.question(data):
             users = db.users
             questions = db.questions

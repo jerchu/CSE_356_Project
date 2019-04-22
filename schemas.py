@@ -45,7 +45,7 @@ question = Validator({
             'type': 'string',
             'regex': '^[0-9A-Za-z_-]{22}$',
         },
-    }
+    },
 })
 
 answer = Validator({
