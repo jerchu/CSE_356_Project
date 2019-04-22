@@ -39,6 +39,13 @@ question = Validator({
             'type': 'string',
         },
     },
+    'media':{
+        'type': 'list',
+        'schema': {
+            'type': 'string',
+            'regex': '^[0-9A-Za-z_-]{22}$',
+        },
+    }
 })
 
 answer = Validator({
@@ -46,10 +53,11 @@ answer = Validator({
         'type': 'string',
         'required': True,
     },
-    'media': {
-        'type': 'string',
+    'media':{
+        'type': 'list',
         'schema': {
-            'type': 'uuid',
+            'type': 'string',
+            'regex': '^[0-9A-Za-z_-]{22}$',
         },
     },
 })
@@ -67,5 +75,32 @@ search = Validator({
     },
     'q':{
         'type': 'string',
-    }
+    },
+    'sort_by':{
+        'type': 'string',
+        'allowed': ['timestamp', 'score'],
+        'default': 'score',
+    },
+    'tags':{
+        'type': 'list',
+        'schema':{
+            'type': 'string',
+        }
+    },
+    'has_media':{
+        'type': 'boolean',
+        'default': False,
+    },
+    'accepted':{
+        'type': 'boolean',
+        'default': False,
+    },
+})
+
+upvote = Validator({
+    'upvote': {
+        'type': 'boolean',
+        'default': True,
+        'required': True,
+    },
 })

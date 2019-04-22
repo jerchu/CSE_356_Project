@@ -23,6 +23,9 @@
     - name: Install mongo
       become: yes
       apt: name=mongodb-org state=latest update_cache=yes
+    - name: Install Cassandra
+      become: yes
+      apt: name=cassandra state=latest update_cache=yes
     - name: bind to all ips
       become: yes
       lineinfile:
@@ -79,9 +82,9 @@
     - name: reload postfix
       become: yes
       service: name=postfix state=reloaded
-    - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, and cerberus
+    - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, cerberus, and cassandra-driver
       become: yes
-      shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus
+      shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus cassandra-driver
     - name: copy conf file
       become: yes
       copy: src=/var/www/server/FlaskApp.conf dest=/etc/apache2/sites-available/server.conf remote_src=yes
