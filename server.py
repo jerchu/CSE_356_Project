@@ -205,6 +205,7 @@ def add_user():
             users.insert_one(user_data)
             mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
+        app.logger.info(schemas.create_user.errors)
         return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
             
@@ -266,7 +267,6 @@ def logout():
 def add_question():
     if request.is_json:
         data = request.json
-        app.logger.info('question: {}'.format(data))
         if schemas.question(data):
             users = db.users
             questions = db.questions
@@ -283,6 +283,7 @@ def add_question():
             question['accepted_answer_id'] = None
             questions.insert_one(question)
             return (jsonify({'status': 'OK', 'id': uuid2slug(question['_id'])}), 201)
+        app.logger.info(schemas.question.errors)
         return (jsonify({'status': 'error', 'error': schemas.question.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
 
@@ -354,6 +355,7 @@ def post_answer(id):
                 answers.insert_one(answer)
                 questions.find_one_and_update({'_id': id}, {'$inc': {'answer_count': 1}})
                 return (jsonify({'status': 'OK', 'id': uuid2slug(answer['_id'])}))
+            app.logger.info(schemas.answer.errors)
             return (jsonify({'status': 'error', 'error': schemas.answer.errors}), 422)
         return (jsonify({'status': 'error', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
     return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
@@ -449,6 +451,9 @@ def upvote_answer(id):
                 upvote = not answers['voters'][session['username']]
             else:
                 params = schemas.upvote.normalized(request.json)
+                if not schemas.upvote(params):
+                    app.logger.info(schemas.upvote.errors)
+                    return (jsonify({'status': 'error', 'error': schemas.upvote.errors}))
                 upvote = params['upvote']
             answers.find_one_and_update({'_id', id}, {'score': {'$inc': 1 if upvote else -1}, 'voters': {'$set': {answer['user']: upvote}}})
             query = {'username': answer['user']}
