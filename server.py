@@ -273,8 +273,11 @@ def add_question():
     if request.is_json:
         data = request.json
         if schemas.question(data):
-            users = db.users
-            questions = db.questions
+            if 'media' in data:
+                media_ids = questions.find({}).distinct('media')
+                for media in data['media']:
+                    if media in media_ids:
+                        return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
             user = users.find_one({'username': session['username']})
             question = data
             question['_id'] = uuid.uuid4()
