@@ -323,7 +323,7 @@ def get_or_delete_question(id):
                         answers.find_one_and_delete(answer)
                     if 'media' in question:
                         for media_id in question['media']:
-                            sesh.execute('DELETE * FROM media WHERE id=%s', [media_id])
+                            sesh.execute('DELETE * FROM media WHERE id=%s', [slug2uuid(media_id)])
                     return (jsonify({'status': 'OK'}))
                 return (jsonify({'status': 'error', 'error': 'You do not have permission to delete this question'}), 403)
         return (jsonify({'status': 'error', 'error': 'Must be logged in to delete questions'}), 403)
