@@ -510,6 +510,13 @@ def get_media(id):
         return resp
     return ('media not found', 404)
     
+@app.route('/reset')
+def reset_databases():
+    questions.drop()
+    answers.drop()
+    users.drop()
+    sesh.execute("DROP TABLE media")
+    return ('reset successful', 200)
 
 def evaluate_state(board):
     for i in range(3):
