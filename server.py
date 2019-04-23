@@ -497,7 +497,7 @@ def add_media():
 @app.route('/media/<id>')
 def get_media(id):
     id = slug2uuid(id)
-    media = sesh.execute('SELECT * FROM media WHERE id = %s', [id])
+    media = [x for x in sesh.execute('SELECT * FROM media WHERE id = %s', [id])]
     if len(media) > 0:
         media = media[0]
         resp = make_response(media.content)
