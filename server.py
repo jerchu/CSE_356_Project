@@ -398,7 +398,6 @@ def get_answers(id):
         for answer in question_answers:
             answer['id'] = uuid2slug(answer['_id'])
             del answer['_id']
-            del answer['viewers']
             del answer['voters']
             if 'media' not in answer:
                 question['media'] = []
