@@ -515,7 +515,8 @@ def reset_databases():
     questions.drop()
     answers.drop()
     users.drop()
-    sesh.execute("DROP TABLE media")
+    sesh.execute("DROP TABLE IF EXISTS media")
+    sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, content blob )')
     return ('reset successful', 200)
 
 def evaluate_state(board):
