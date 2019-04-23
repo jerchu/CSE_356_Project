@@ -282,6 +282,10 @@ def add_question():
                     for media in data['media']:
                         if media in media_ids:
                             return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                    media_ids = answers.find({}).distinct('media')
+                    for media in data['media']:
+                        if media in media_ids:
+                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
             user = users.find_one({'username': session['username']})
             question = data
             question['_id'] = uuid.uuid4()
@@ -369,6 +373,10 @@ def post_answer(id):
                         del data['media']
                     else:
                         media_ids = questions.find({}).distinct('media')
+                        for media in data['media']:
+                            if media in media_ids:
+                                return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                        media_ids = answers.find({}).distinct('media')
                         for media in data['media']:
                             if media in media_ids:
                                 return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
