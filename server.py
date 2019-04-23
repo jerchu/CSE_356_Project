@@ -491,7 +491,7 @@ def upvote_answer(id):
                         upvote = None
                     else:
                         amt += 1 if not prev_upvote else -1
-                answers.find_one_and_update({'_id', id}, {'$inc': {'score': amt}, '$set': {'voters': {answer['user']: upvote}}})
+                answers.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters': {answer['user']: upvote}}})
                 query = {'username': answer['user']}
                 while amt != 0:
                     if amt < 0:
@@ -516,7 +516,7 @@ def accept_answer(id):
             user = users.find_one({'_id': question['user_id']})
             if user['username'] == session['username']:
                 questions.find_one_and_update({'_id', answer['question_id']}, {'$set': {'accepted_answer_id': answer['_id']}})
-                answer.find_one_and_update({'_id', id}, {'$set': {'is_accepted': True}})
+                answer.find_one_and_update({'_id': id}, {'$set': {'is_accepted': True}})
                 return (jsonify({'status': 'OK'}), 200)
             return (jsonify({'status': 'error', 'error': 'You are not the original asker of this question'}), 403)
         return (jsonify({'status': 'error', 'error': 'There is already an accepted answer'}), 400)
