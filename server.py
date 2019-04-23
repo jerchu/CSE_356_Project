@@ -46,7 +46,7 @@ with open(os.path.join(here, 'static/images.csv'), 'r') as f:
 
 import logging
 streamhndlr = logging.StreamHandler()
-app.logger.setLevel(logging.ERROR)
+app.logger.setLevel(logging.INFO)
 
 client = MongoClient('64.190.90.55', 27017)
 db = client.stcku
@@ -498,7 +498,8 @@ def add_media():
 @app.route('/media/<id>')
 def get_media(id):
     id = slug2uuid(id)
-    media = [x for x in sesh.execute('SELECT * FROM media WHERE id = %s', [id])]
+    media = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [id])]
+    app.logger.info(media)
     if len(media) > 0:
         media = media[0]
         resp = make_response(media.content)
