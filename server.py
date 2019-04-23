@@ -411,7 +411,8 @@ def search_questions():
         if schemas.search(params):
             query = {}
             query['timestamp'] = {'$lt': params['timestamp']}
-            query['tags'] = {'$all': params['tags']}
+            if 'tags' in params:
+                query['tags'] = {'$all': params['tags']}
             if params['accepted']:
                 query['accepted_answer_id'] = {'$ne': None}
             if params['has_media']:
