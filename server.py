@@ -502,7 +502,7 @@ def get_media(id):
         media = media[0]
         resp = make_response(media.content)
         m = re.search(r'^.*\.(.*)$', media.name)
-        if m.group(0) in image_types:
+        if m.group(1) in image_types:
             resp.headers['Content-Type'] = 'image/{}'.format(m.group(0))
         else:
             resp.headers['Content-Type'] = 'video/{}'.format(m.group(0))
