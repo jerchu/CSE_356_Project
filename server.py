@@ -36,6 +36,7 @@ video_types = ['mp4']
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 mail = Mail(app)
 agent = Learner(epsilon=0)
 agent.load_states(os.path.join(here, 'static/RL_learn/playero.pickle'))
