@@ -45,7 +45,7 @@ with open(os.path.join(here, 'static/images.csv'), 'r') as f:
 
 import logging
 streamhndlr = logging.StreamHandler()
-app.logger.setLevel(logging.INFO)
+app.logger.setLevel(logging.ERROR)
 
 client = MongoClient('64.190.90.55', 27017)
 db = client.stcku
