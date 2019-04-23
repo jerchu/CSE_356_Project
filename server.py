@@ -488,7 +488,7 @@ def add_media():
         json = {
             'id': uuid.uuid4(),
             'name': secure_filename(request.files['content'].filename),
-            'content': request.files['content']
+            'content': bytearray(request.files['content'])
         }
         sesh.execute('INSERT INTO media (id, name, content) VALUES (%(id)s, %(name)s, %(content)s)', json)
         return (jsonify({'status': 'OK', 'id': uuid2slug(json['id'])}))
