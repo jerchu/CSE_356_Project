@@ -13,4 +13,5 @@ http {
             proxy_pass http://myapp1;
         }
     }
+    client_max_body_size 100M;
 }
