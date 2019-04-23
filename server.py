@@ -307,6 +307,10 @@ def normalize_question_fields(question):
     del question['user_id']
     if question['accepted_answer_id'] is not None:
         question['accepted_answer_id'] = uuid2slug(question['accepted_answer_id'])
+    del question['viewers']
+    del question['voters']
+    if 'media' not in question:
+        question['media'] = []
 
 @app.route('/questions/<id>', methods=['GET', 'DELETE'])
 def get_or_delete_question(id):  
@@ -333,7 +337,6 @@ def get_or_delete_question(id):
                 return (jsonify({'status': 'error', 'error': 'You do not have permission to delete this question'}), 403)
         return (jsonify({'status': 'error', 'error': 'Must be logged in to delete questions'}), 403)
     if question is not None:
-        normalize_question_fields(question)
         unique_visit = False
         if 'username' in session:
             if session['username'] not in question['viewers']:
@@ -346,10 +349,7 @@ def get_or_delete_question(id):
         if unique_visit:
             question['view_count'] += 1
             questions.find_one_and_update({'_id': id}, {'$inc': {'view_count': 1}, '$push': {'viewers': add_visitor}})
-        del question['viewers']
-        del question['voters']
-        if 'media' not in question:
-            question['media'] = []
+        normalize_question_fields(question)
         return (jsonify({'status': 'OK', 'question': question}), 200)
     return (jsonify({'status': 'error', 'error': 'PAGE NOT FOUND'}), 404)
 
