@@ -446,20 +446,29 @@ def upvote_question(id):
         return (jsonify({'status': 'error', 'error': 'Question not found'}), 404)
     id = slug2uuid(id)
     if request.is_json:
-        question = questions.find_one({'_id': id})
-        if question is not None:
-            if session['username'] in question['voters']:
-                upvote = not questions['voters'][session['username']]
-            else:
-                params = schemas.upvote.normalized(request.json)
-                upvote = params['upvote']
-            question.find_one_and_update({'_id', id}, {'score': {'$inc': 1 if upvote else -1}, 'voters': {'$set': {question['user_id']: upvote}}})
-            query = {'_id': question['user_id']}
-            if not upvote:
-                query['reputation'] = {'$gt', 1}
-            users.find_one_and_update(query, {'reputation': {'$inc': 1 if upvote else -1}})
-            return (jsonify({'status': 'OK'}), 200)
-        return (jsonify({'status': 'error', 'error': 'No question found with given id'}), 404)
+        params = schemas.upvote.normalized(request.json)
+        if schemas.upvote(params):
+            upvote = params['upvote']
+            question = questions.find_one({'_id': id})
+            if question is not None:
+                amt = 1 if upvote else -1
+                if session['username'] in question['voters']:
+                    prev_upvote = questions['voters'][session['username']]
+                    if upvote == prev_upvote:
+                        amt = 1 if not prev_upvote else -1
+                        upvote = None
+                    else:
+                        amt += 1 if not prev_upvote else -1
+                question.find_one_and_update({'_id', id}, {'score': {'$inc': amt}, 'voters': {'$set': {question['user_id']: upvote}}})
+                query = {'_id': question['user_id']}
+                while amt != 0:
+                    if amt < 0:
+                        query['reputation'] = {'$gt', 1}
+                    users.find_one_and_update(query, {'reputation': {'$inc': 1 if amt > 0 else -1}})
+                    amt += 1 if amt < 0 else -1
+                return (jsonify({'status': 'OK'}), 200)
+            return (jsonify({'status': 'error', 'error': 'No question found with given id'}), 404)
+        return (jsonify({'status': 'error', 'error': schemas.upvote.errors}), 422)
     return (jsonify({'status': 'error', 'error': 'Bad request, must send JSON'}), 400)
         
 @app.route('/answers/<id>/upvote', methods=['POST'])
