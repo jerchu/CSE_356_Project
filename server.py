@@ -46,7 +46,7 @@ with open(os.path.join(here, 'static/images.csv'), 'r') as f:
 
 import logging
 streamhndlr = logging.StreamHandler()
-app.logger.setLevel(logging.INFO)
+app.logger.setLevel(logging.ERROR)
 
 client = MongoClient('64.190.90.55', 27017)
 db = client.stcku
@@ -74,6 +74,10 @@ def login_required(f):
                 return f(*args, **kwargs)
         return (jsonify({'status': 'error', 'error': 'Must be logged in to access this resource'}), 403) #('UNAUTHORIZED', 401)
     return check_login
+
+def validate_id(id):
+    slug = uuid2slug(slug2uuid(id))
+    return id == slug
             
 
 @app.route('/')
@@ -296,7 +300,9 @@ def normalize_question_fields(question):
     del question['user_id']
 
 @app.route('/questions/<id>', methods=['GET', 'DELETE'])
-def get_or_delete_question(id):    
+def get_or_delete_question(id):  
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'PAGE NOT FOUND'}), 404)
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None and request.method == 'DELETE':
@@ -338,6 +344,8 @@ def get_or_delete_question(id):
 @app.route('/questions/<id>/answers/add', methods=['POST'])
 @login_required
 def post_answer(id):
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'Question not found'}), 404)
     id = slug2uuid(id)
     if request.is_json:
         data = request.json
@@ -363,6 +371,8 @@ def post_answer(id):
 
 @app.route('/questions/<id>/answers')
 def get_answers(id):
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'Question not found'}), 404)
     id = slug2uuid(id)
     question = questions.find_one({'_id': id})
     if question is not None:
@@ -423,6 +433,8 @@ def get_user_answers(username):
 @app.route('/questions/<id>/upvote', methods=['POST'])
 @login_required
 def upvote_question(id):
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'Question not found'}), 404)
     id = slug2uuid(id)
     if request.is_json:
         question = questions.find_one({'_id': id})
@@ -444,6 +456,8 @@ def upvote_question(id):
 @app.route('/answers/<id>/upvote', methods=['POST'])
 @login_required
 def upvote_answer(id):
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'Answer not found'}), 404)
     id = slug2uuid(id)
     if request.is_json:
         answer = answers.find_one({'_id': id})
@@ -468,6 +482,8 @@ def upvote_answer(id):
 @app.route('/answers/<id>/accept', methods=['POST'])
 @login_required
 def accept_answer(id):
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'Answer not found'}), 404)
     id = slug2uuid(id)
     answer = answers.find_one({'_id': id})
     if answer is not None:
@@ -497,9 +513,10 @@ def add_media():
 
 @app.route('/media/<id>')
 def get_media(id):
+    if not validate_id(id):
+        return (jsonify({'status': 'error', 'error': 'Media not found'}), 404)
     id = slug2uuid(id)
     media = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [id])]
-    app.logger.info(media)
     if len(media) > 0:
         media = media[0]
         resp = make_response(media.content)
