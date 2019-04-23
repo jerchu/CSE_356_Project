@@ -454,6 +454,8 @@ def upvote_question(id):
                 amt = 1 if upvote else -1
                 if session['username'] in question['voters']:
                     prev_upvote = questions['voters'][session['username']]
+                    app.logger.info(prev_upvote)
+                    app.logger.info(upvote)
                     if upvote == prev_upvote:
                         amt = -amt
                         upvote = None
