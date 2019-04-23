@@ -459,7 +459,7 @@ def upvote_question(id):
                         upvote = None
                     else:
                         amt += 1 if not prev_upvote else -1
-                questions.find_one_and_update({'_id', id}, {'$inc': {'score': amt}, '$set': {'voters': {question['user_id']: upvote}}})
+                questions.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters': {question['user_id']: upvote}}})
                 query = {'_id': question['user_id']}
                 while amt != 0:
                     if amt < 0:

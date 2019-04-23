@@ -1,0 +1,12 @@
+---
+- hosts: frontends
+  gather_facts: False
+
+  remote_user: root
+  tasks:
+    - name: clone server
+      become: yes
+      git: repo=https://github.com/jerchu/CSE_356_Project.git dest=/var/www/server update=yes
+    - name: restart apache
+      become: yes
+      service: name=apache2 state=restarted
