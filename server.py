@@ -46,7 +46,7 @@ with open(os.path.join(here, 'static/images.csv'), 'r') as f:
 
 import logging
 streamhndlr = logging.StreamHandler()
-app.logger.setLevel(logging.ERROR)
+app.logger.setLevel(logging.INFO)
 
 client = MongoClient('64.190.90.55', 27017)
 db = client.stcku
@@ -274,6 +274,7 @@ def add_question():
         data = request.json
         if schemas.question(data):
             if 'media' in data:
+                app.logger.info(data['media'])
                 media_ids = questions.find({}).distinct('media')
                 for media in data['media']:
                     if media in media_ids:
@@ -355,6 +356,11 @@ def post_answer(id):
         question = questions.find_one({'_id': id})
         if question is not None:
             if schemas.answer(data):
+                if 'media' in data:
+                    media_ids = questions.find({}).distinct('media')
+                    for media in data['media']:
+                        if media in media_ids:
+                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
                 user = users.find_one({'username': session['username']})
                 answer = data
                 answer['_id'] = uuid.uuid4()
