@@ -531,7 +531,7 @@ def accept_answer(id):
             user = users.find_one({'_id': question['user_id']})
             if user['username'] == session['username']:
                 questions.find_one_and_update({'_id': answer['question_id']}, {'$set': {'accepted_answer_id': answer['_id']}})
-                answer.find_one_and_update({'_id': id}, {'$set': {'is_accepted': True}})
+                answers.find_one_and_update({'_id': id}, {'$set': {'is_accepted': True}})
                 return (jsonify({'status': 'OK'}), 200)
             return (jsonify({'status': 'error', 'error': 'You are not the original asker of this question'}), 403)
         return (jsonify({'status': 'error', 'error': 'There is already an accepted answer'}), 400)
