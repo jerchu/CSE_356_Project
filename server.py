@@ -274,11 +274,14 @@ def add_question():
         data = request.json
         if schemas.question(data):
             if 'media' in data:
-                app.logger.info(data['media'])
-                media_ids = questions.find({}).distinct('media')
-                for media in data['media']:
-                    if media in media_ids:
-                        return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                if len(data['media']) < 1:
+                    del data['media']
+                else:
+                    app.logger.info(data['media'])
+                    media_ids = questions.find({}).distinct('media')
+                    for media in data['media']:
+                        if media in media_ids:
+                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
             user = users.find_one({'username': session['username']})
             question = data
             question['_id'] = uuid.uuid4()
@@ -342,6 +345,9 @@ def get_or_delete_question(id):
             question['view_count'] += 1
             questions.find_one_and_update({'_id': id}, {'$inc': {'view_count': 1}, '$push': {'viewers': add_visitor}})
         del question['viewers']
+        del question['voters']
+        if 'media' not in question:
+            question['media'] = []
         return (jsonify({'status': 'OK', 'question': question}), 200)
     return (jsonify({'status': 'error', 'error': 'PAGE NOT FOUND'}), 404)
 
@@ -357,10 +363,13 @@ def post_answer(id):
         if question is not None:
             if schemas.answer(data):
                 if 'media' in data:
-                    media_ids = questions.find({}).distinct('media')
-                    for media in data['media']:
-                        if media in media_ids:
-                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                    if len(data['media']) < 1:
+                        del data['media']
+                    else:
+                        media_ids = questions.find({}).distinct('media')
+                        for media in data['media']:
+                            if media in media_ids:
+                                return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
                 user = users.find_one({'username': session['username']})
                 answer = data
                 answer['_id'] = uuid.uuid4()
@@ -389,6 +398,10 @@ def get_answers(id):
         for answer in question_answers:
             answer['id'] = uuid2slug(answer['_id'])
             del answer['_id']
+            del answer['viewers']
+            del answer['voters']
+            if 'media' not in answer:
+                question['media'] = []
         return jsonify({'status': 'OK', 'answers': question_answers})
     return (jsonify({'status': 'error', 'error': 'No question with ID \'{}\''.format(uuid2slug(id))}), 404)
     
@@ -402,6 +415,8 @@ def search_questions():
             query['tags'] = {'$all': params['tags']}
             if params['accepted']:
                 query['accepted_answer_id'] = {'$ne': None}
+            if params['has_media']:
+                query['media'] = {'$ne': None}
             if 'q' in params and params['q'].strip() != "":
                 query['$text'] = {'$search': params['q']}
             if 'q' in params and params['q'].strip() == "":
