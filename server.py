@@ -31,7 +31,7 @@ def slug2uuid(slug):
     return uuid.UUID(bytes=(base64.b64decode(slug.replace('_', '/').replace('-', '+') + '==')))
 #--------------------------------------------
 
-image_types = ['jpeg', 'png', 'gif']
+image_types = ['jpeg', 'jpg', 'png', 'gif']
 video_types = ['mp4']
 
 app = Flask(__name__, static_url_path='')
