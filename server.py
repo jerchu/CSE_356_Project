@@ -490,7 +490,7 @@ def add_media():
             'name': secure_filename(request.files['content'].filename),
             'content': request.files['content']
         }
-        sesh.execute('INSERT INTO media JSON %s', [json])
+        sesh.execute('INSERT INTO media (id, name, content) VALUES (%(id)s, %(name)s, %(content)s)', json)
         return (jsonify({'status': 'OK', 'id': uuid2slug(json['id'])}))
     return (jsonify({'status': 'error', 'error': 'no content sent'}), 400)
 
