@@ -463,7 +463,7 @@ def upvote_question(id):
                 query = {'_id': question['user_id']}
                 while amt != 0:
                     if amt < 0:
-                        query['reputation'] = {'$gt', 1}
+                        query['reputation'] = {'$gt': 1}
                     users.find_one_and_update(query, {'$inc': {'reputation': 1 if amt > 0 else -1}})
                     amt += 1 if amt < 0 else -1
                 return (jsonify({'status': 'OK'}), 200)
@@ -495,7 +495,7 @@ def upvote_answer(id):
                 query = {'username': answer['user']}
                 while amt != 0:
                     if amt < 0:
-                        query['reputation'] = {'$gt', 1}
+                        query['reputation'] = {'$gt': 1}
                     users.find_one_and_update(query, {'$inc': {'reputation': 1 if amt > 0 else -1}})
                     amt += 1 if amt < 0 else -1
                 return (jsonify({'status': 'OK'}), 200)

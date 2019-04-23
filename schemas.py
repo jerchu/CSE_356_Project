@@ -101,6 +101,5 @@ upvote = Validator({
     'upvote': {
         'type': 'boolean',
         'default': True,
-        'required': True,
     },
 })
