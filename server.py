@@ -305,6 +305,8 @@ def normalize_question_fields(question):
     user = users.find_one({'_id': question['user_id']}, projection={'_id': 0, 'username': 1, 'reputation': 1})
     question['user'] = user
     del question['user_id']
+    if question['accepted_answer_id'] is not None:
+        question['accepted_answer_id'] = uuid2slug(question['accepted_answer_id'])
 
 @app.route('/questions/<id>', methods=['GET', 'DELETE'])
 def get_or_delete_question(id):  
