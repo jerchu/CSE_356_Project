@@ -378,6 +378,12 @@ def post_answer(id):
                     if len(data['media']) < 1:
                         del data['media']
                     else:
+                        for media in data['media']:
+                            media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [media])]
+                            if len(media_file) < 1:
+                                return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}))
+                            if media_file[0].user != session['username']:
+                                return (jsonify({'status': 'error', 'error': 'You are not the original poster of the included media'}))
                         media_ids = questions.find({}).distinct('media')
                         for media in data['media']:
                             if media in media_ids:
