@@ -279,7 +279,7 @@ def add_question():
                 else:
                     app.logger.info(data['media'])
                     for media in data['media']:
-                        media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [media])]
+                        media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [slug2uuid(media)])]
                         if len(media_file) < 1:
                             return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}))
                         if media_file[0].user != session['username']:
@@ -379,7 +379,7 @@ def post_answer(id):
                         del data['media']
                     else:
                         for media in data['media']:
-                            media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [media])]
+                            media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [slug2uuid(media)])]
                             if len(media_file) < 1:
                                 return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}))
                             if media_file[0].user != session['username']:
