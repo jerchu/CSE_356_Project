@@ -76,6 +76,8 @@ def login_required(f):
     return check_login
 
 def validate_id(id):
+    if re.match(r'^[0-9A-Za-z_-]{22}$', id) is None:
+        return False
     slug = uuid2slug(slug2uuid(id))
     return id == slug
             
