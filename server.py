@@ -531,9 +531,11 @@ def upvote_answer(id):
             answer = answers.find_one({'_id': id})
             if answer is not None:
                 amt = 1 if upvote else -1
+                waived = False
                 if session['username'] in answer['voters']:
                     prev_upvote = answer['voters'][session['username']]['upvote']
-                    waived = answer['voters'][session['username']]['waived']
+                    if 'waived' in answer['voters'][session['username']]:
+                        waived = answer['voters'][session['username']]['waived']
                     if upvote == prev_upvote:
                         amt = -amt
                         upvote = None
