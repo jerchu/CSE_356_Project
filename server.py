@@ -492,18 +492,23 @@ def upvote_question(id):
             if question is not None:
                 amt = 1 if upvote else -1
                 if session['username'] in question['voters']:
-                    prev_upvote = question['voters'][session['username']]
+                    prev_upvote = question['voters'][session['username']]['upvote']
+                    waived = question['voters'][session['username']]['waived']
                     if upvote == prev_upvote:
                         amt = -amt
                         upvote = None
                     elif prev_upvote is not None:
                         amt += amt
-                questions.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters.{}'.format(session['username']): upvote}})
+                questions.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters.{}.upvote'.format(session['username']): upvote}})
                 query = {'_id': question['user_id']}
+                if amt > 1 and waived:
+                    amt = 1
                 while amt != 0:
                     if amt < 0:
                         query['reputation'] = {'$gt': 1}
-                    users.find_one_and_update(query, {'$inc': {'reputation': 1 if amt > 0 else -1}})
+                    result = users.find_one_and_update(query, {'$inc': {'reputation': 1 if amt > 0 else -1}})
+                    if result is None:
+                        questions.find_one_and_update({'_id': id}, {'$set': {'voters.{}.waived'.format(session['username']): True}})
                     amt += 1 if amt < 0 else -1
                 return (jsonify({'status': 'OK'}), 200)
             return (jsonify({'status': 'error', 'error': 'No question found with given id'}), 404)
