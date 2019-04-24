@@ -58,7 +58,7 @@ cluster = Cluster(['64.190.90.55'])
 sesh = cluster.connect()
 sesh.execute("CREATE KEYSPACE IF NOT EXISTS stcku WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '2' }")
 sesh.set_keyspace('stcku')
-sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, content blob )')
+sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, user text, content blob )')
 
 hostname='StackUnderflow'
 
@@ -278,6 +278,12 @@ def add_question():
                     del data['media']
                 else:
                     app.logger.info(data['media'])
+                    for media in data['media']:
+                        media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [media])]
+                        if len(media_file) < 1:
+                            return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}))
+                        if media_file[0].user != session['username']:
+                            return (jsonify({'status': 'error', 'error': 'You are not the original poster of the included media'}))
                     media_ids = questions.find({}).distinct('media')
                     for media in data['media']:
                         if media in media_ids:
@@ -554,9 +560,10 @@ def add_media():
         json = {
             'id': uuid.uuid4(),
             'name': secure_filename(request.files['content'].filename),
+            'user': session['username'],
             'content': request.files['content'].stream.read()
         }
-        sesh.execute('INSERT INTO media (id, name, content) VALUES (%(id)s, %(name)s, %(content)s)', json)
+        sesh.execute('INSERT INTO media (id, name, user, content) VALUES (%(id)s, %(name)s, %(user)s, %(content)s)', json)
         return (jsonify({'status': 'OK', 'id': uuid2slug(json['id'])}))
     return (jsonify({'status': 'error', 'error': 'no content sent'}), 400)
 
@@ -583,7 +590,7 @@ def reset_databases():
     answers.drop()
     users.drop()
     sesh.execute("DROP TABLE IF EXISTS media")
-    sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, content blob )')
+    sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, user text, content blob )')
     return ('reset successful', 200)
 
 def evaluate_state(board):
