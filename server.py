@@ -498,7 +498,7 @@ def upvote_question(id):
                         upvote = None
                     elif prev_upvote is not None:
                         amt += amt
-                questions.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters.{}'.format(session['username']): upvote}}})
+                questions.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters.{}'.format(session['username']): upvote}})
                 query = {'_id': question['user_id']}
                 while amt != 0:
                     if amt < 0:
@@ -530,7 +530,7 @@ def upvote_answer(id):
                         upvote = None
                     elif prev_upvote is not None:
                         amt += amt
-                answers.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters.{}'.format(session['username']): upvote}}})
+                answers.find_one_and_update({'_id': id}, {'$inc': {'score': amt}, '$set': {'voters.{}'.format(session['username']): upvote}})
                 query = {'username': answer['user']}
                 while amt != 0:
                     if amt < 0:
