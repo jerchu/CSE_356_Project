@@ -281,17 +281,17 @@ def add_question():
                     for media in data['media']:
                         media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [slug2uuid(media)])]
                         if len(media_file) < 1:
-                            return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}))
+                            return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}), 404)
                         if media_file[0].user != session['username']:
-                            return (jsonify({'status': 'error', 'error': 'You are not the original poster of the included media'}))
+                            return (jsonify({'status': 'error', 'error': 'You are not the original poster of the included media'}), 409)
                     media_ids = questions.find({}).distinct('media')
                     for media in data['media']:
                         if media in media_ids:
-                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 409)
                     media_ids = answers.find({}).distinct('media')
                     for media in data['media']:
                         if media in media_ids:
-                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                            return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 409)
             user = users.find_one({'username': session['username']})
             question = data
             question['_id'] = uuid.uuid4()
@@ -381,17 +381,17 @@ def post_answer(id):
                         for media in data['media']:
                             media_file = [x for x in sesh.execute('SELECT * FROM media WHERE id=%s', [slug2uuid(media)])]
                             if len(media_file) < 1:
-                                return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}))
+                                return (jsonify({'status': 'error', 'error': 'No media found with id {}'.format(media)}), 404)
                             if media_file[0].user != session['username']:
-                                return (jsonify({'status': 'error', 'error': 'You are not the original poster of the included media'}))
+                                return (jsonify({'status': 'error', 'error': 'You are not the original poster of the included media'}), 409)
                         media_ids = questions.find({}).distinct('media')
                         for media in data['media']:
                             if media in media_ids:
-                                return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                                return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 409)
                         media_ids = answers.find({}).distinct('media')
                         for media in data['media']:
                             if media in media_ids:
-                                return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 405)
+                                return (jsonify({'status': 'error', 'error': 'media {} is already used in another question'.format(media)}), 409)
                 user = users.find_one({'username': session['username']})
                 answer = data
                 answer['_id'] = uuid.uuid4()
