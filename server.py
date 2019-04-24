@@ -503,6 +503,7 @@ def upvote_question(id):
                 query = {'_id': question['user_id']}
                 if amt > 1 and waived:
                     amt = 1
+                    questions.find_one_and_update({'_id': id}, {'$set': {'voters.{}.waived'.format(session['username']): False}})
                 while amt != 0:
                     if amt < 0:
                         query['reputation'] = {'$gt': 1}
@@ -540,6 +541,7 @@ def upvote_answer(id):
                 query = {'username': answer['user']}
                 if amt > 1 and waived:
                     amt = 1
+                    answers.find_one_and_update({'_id': id}, {'$set': {'voters.{}.waived'.format(session['username']): False}})
                 while amt != 0:
                     if amt < 0:
                         query['reputation'] = {'$gt': 1}
