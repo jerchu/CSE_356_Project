@@ -4,6 +4,12 @@
 
   remote_user: root
   tasks:
+    # - name: install git
+    #   become: yes
+    #   apt: name=git state=latest update_cache=yes
+    # - name: clone queue reader
+    #   become: yes
+    #   #git: repo=https://github.com/jerchu/CSE_356_Project.git dest=/var/www/server update=yes
     - name: install gnupg
       apt: name=gnupg state=latest update_cache=yes
     - name: Add mongo ppa key
@@ -26,6 +32,18 @@
     - name: Install Cassandra
       become: yes
       apt: name=cassandra state=latest update_cache=yes
+    # - name: Install RabbitMQ
+    #   become: yes
+    #   apt: name=rabbitmq-server state=latest update_cache=yes
+    # - name: install pip3
+    #   become: yes
+    #   apt: 
+    #     name: python3-pip
+    #     state: latest
+    #     update_cache: yes
+    # - name: install pika
+    #   become: yes
+    #   shell: pip3 install pika
     - name: bind to all ips
       become: yes
       lineinfile:

@@ -1,26 +1,31 @@
-import os
-here = os.path.dirname(__file__)
-import sys
-sys.path.insert(0, here)
-import re
-from static.RL_learn.learner import Learner, Game
-from functools import wraps
-from flask import Flask, render_template, request, jsonify, make_response, session
-from flask_mail import Mail, Message
-import datetime
-import time
-import random
-from pymongo import MongoClient
-import bcrypt
-import csv
-import smtplib
-import uuid
 import base64
+import csv
+import datetime
+import logging
+import os
+import random
+import re
+import smtplib
+import sys
+import time
+import uuid
 from email.message import EmailMessage
 from email.policy import SMTP
-import schemas
+from functools import wraps
+
+import bcrypt
 from cassandra.cluster import Cluster
+from flask import (Flask, jsonify, make_response, render_template, request,
+                   session)
+from flask_mail import Mail, Message
+from pymongo import MongoClient
 from werkzeug.utils import secure_filename
+
+import schemas
+from static.RL_learn.learner import Game, Learner
+
+here = os.path.dirname(__file__)
+sys.path.insert(0, here)
 
 # section below for converting uuid to base64 (a.k.a. a slug) and visa versa
 #--------------------------------------------
@@ -44,7 +49,6 @@ agent.load_states(os.path.join(here, 'static/RL_learn/playero.pickle'))
 with open(os.path.join(here, 'static/images.csv'), 'r') as f:
     images = f.readlines()
 
-import logging
 streamhndlr = logging.StreamHandler()
 app.logger.setLevel(logging.INFO)
 
@@ -59,6 +63,8 @@ sesh = cluster.connect()
 sesh.execute("CREATE KEYSPACE IF NOT EXISTS stcku WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '2' }")
 sesh.set_keyspace('stcku')
 sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, user text, content blob )')
+
+queued_media = set()
 
 hostname='StackUnderflow'
 
@@ -577,6 +583,12 @@ def accept_answer(id):
         return (jsonify({'status': 'error', 'error': 'There is already an accepted answer'}), 400)
     return (jsonify({'status': 'error', 'error': 'There is no answer with the given id'}), 404)
 
+def insert_success(rows):
+    for row in rows:
+        if row.id in queued_media:
+            queued_media.remove(row.id)
+
+
 @app.route('/addmedia', methods=['POST'])
 @login_required
 def add_media():
@@ -587,7 +599,9 @@ def add_media():
             'user': session['username'],
             'content': request.files['content'].stream.read()
         }
-        sesh.execute('INSERT INTO media (id, name, user, content) VALUES (%(id)s, %(name)s, %(user)s, %(content)s)', json)
+        insert = sesh.execute_async('INSERT INTO media (id, name, user, content) VALUES (%(id)s, %(name)s, %(user)s, %(content)s)', json)
+        insert.add_callback(insert_success)
+        queued_media.add(json['id'])
         return (jsonify({'status': 'OK', 'id': uuid2slug(json['id'])}))
     return (jsonify({'status': 'error', 'error': 'no content sent'}), 400)
 
