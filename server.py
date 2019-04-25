@@ -333,6 +333,7 @@ def normalize_question_fields(question):
         question['media'] = []
 
 def undo_votes(item):
+
     amt = 0
     for user, votes in item['voters']:
         if 'waived' in votes and votes['waived'] and not votes['upvote']:
@@ -371,7 +372,7 @@ def get_or_delete_question(id):
             if user is not None and session['key'] == user['key']:
                 user = users.find_one({'username': session['username']})
                 if user['_id'] == question['user_id']:
-                    undo_votes(questions)
+                    undo_votes(question)
                     questions.find_one_and_delete({'_id': id})
                     ans = answers.find({'question_id': id})
                     for answer in ans:
