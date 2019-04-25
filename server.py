@@ -380,7 +380,7 @@ def get_or_delete_question(id):
                             for media_id in answer['media']:
                                 sesh.execute('DELETE FROM media WHERE id=%s', [slug2uuid(media_id)])
                         undo_votes(answer)
-                        answers.find_one_and_delete(answer)
+                        answers.find_one_and_delete({'_id': answer['_id']})
                     if 'media' in question:
                         app.logger.info('deleting {}'.format(question['media']))
                         for media_id in question['media']:
