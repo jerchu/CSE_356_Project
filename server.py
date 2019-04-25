@@ -349,6 +349,10 @@ def get_or_delete_question(id):
                     questions.find_one_and_delete({'_id': id})
                     ans = answers.find({'question_id': id}, projection={'_id': 1})
                     for answer in ans:
+                        if 'media' in answer:
+                            app.logger.info('deleting {}'.format(answer['media']))
+                            for media_id in answer['media']:
+                                sesh.execute('DELETE FROM media WHERE id=%s', [slug2uuid(media_id)])
                         answers.find_one_and_delete(answer)
                     if 'media' in question:
                         app.logger.info('deleting {}'.format(question['media']))
