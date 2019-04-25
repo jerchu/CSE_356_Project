@@ -332,6 +332,31 @@ def normalize_question_fields(question):
     if 'media' not in question:
         question['media'] = []
 
+def undo_votes(item):
+    amt = 0
+    for user, votes in item['voters']:
+        if 'waived' in votes and votes['waived'] and not votes['upvote']:
+            pass
+        else:
+            if votes['upvote']:
+                amt -= -1
+            elif votes['upvote'] is not None:
+                amt += 1
+    if 'user_id' in item:
+        while amt != 0:
+            query = {'_id': item['user_id']}
+            if amt < 0:
+                query['reputation'] = {'$gt': 1}
+            users.find_one_and_update(query, {'$inc': {'reputation': 1 if amt > 0 else -1}})
+            amt += 1 if amt < 0 else -1
+    elif 'user' in item:
+        while amt != 0:
+            query = {'username': item['user']}
+            if amt < 0:
+                query['reputation'] = {'$gt': 1}
+            users.find_one_and_update(query, {'$inc': {'reputation': 1 if amt > 0 else -1}})
+            amt += 1 if amt < 0 else -1
+
 @app.route('/questions/<id>', methods=['GET', 'DELETE'])
 def get_or_delete_question(id):  
     if not validate_id(id):
@@ -346,13 +371,15 @@ def get_or_delete_question(id):
             if user is not None and session['key'] == user['key']:
                 user = users.find_one({'username': session['username']})
                 if user['_id'] == question['user_id']:
+                    undo_votes(questions)
                     questions.find_one_and_delete({'_id': id})
-                    ans = answers.find({'question_id': id}, projection={'_id': 1})
+                    ans = answers.find({'question_id': id})
                     for answer in ans:
                         if 'media' in answer:
                             app.logger.info('deleting {}'.format(answer['media']))
                             for media_id in answer['media']:
                                 sesh.execute('DELETE FROM media WHERE id=%s', [slug2uuid(media_id)])
+                        undo_votes(answer)
                         answers.find_one_and_delete(answer)
                     if 'media' in question:
                         app.logger.info('deleting {}'.format(question['media']))
