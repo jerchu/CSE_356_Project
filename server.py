@@ -74,8 +74,10 @@ def login_required(f):
         if 'username' in session and 'key' in session and session['username'] != '' and session['key'] != '':
             users = db.users
             user = users.find_one({'username': session['username']})
+            if user is None:
+                return (jsonify({'status': 'error', 'error': 'Bad cookies, reference non-existent user'}), 400)
             if user['verified'] == False:
-                return (jsonify({'status': 'error', 'error': 'Account requires verification'}))
+                return (jsonify({'status': 'error', 'error': 'Account requires verification'}), 403)
             if user is not None and session['key'] == user['key']:
                 return f(*args, **kwargs)
         return (jsonify({'status': 'error', 'error': 'Must be logged in to access this resource'}), 403) #('UNAUTHORIZED', 401)
@@ -350,7 +352,7 @@ def get_or_delete_question(id):
                         answers.find_one_and_delete(answer)
                     if 'media' in question:
                         for media_id in question['media']:
-                            sesh.execute('DELETE * FROM media WHERE id=%s', [slug2uuid(media_id)])
+                            sesh.execute('DELETE FROM media WHERE id=%s', [slug2uuid(media_id)])
                     return (jsonify({'status': 'OK'}))
                 return (jsonify({'status': 'error', 'error': 'You do not have permission to delete this question'}), 403)
         return (jsonify({'status': 'error', 'error': 'Must be logged in to delete questions'}), 403)
