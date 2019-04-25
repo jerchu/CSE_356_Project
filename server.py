@@ -351,6 +351,7 @@ def get_or_delete_question(id):
                     for answer in ans:
                         answers.find_one_and_delete(answer)
                     if 'media' in question:
+                        app.logger.info('deleting {}'.format(question['media']))
                         for media_id in question['media']:
                             sesh.execute('DELETE FROM media WHERE id=%s', [slug2uuid(media_id)])
                     return (jsonify({'status': 'OK'}))
