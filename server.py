@@ -9,6 +9,7 @@ import smtplib
 import sys
 import time
 import uuid
+import threading
 from email.message import EmailMessage
 from email.policy import SMTP
 from functools import wraps
@@ -218,7 +219,9 @@ def add_user():
                 recipients=[user_data['email']]
             )
             users.insert_one(user_data)
-            mail.send(msg)
+            t = threading.Thread(target=mail.send, args=(msg, ))
+            t.start()
+            t.run() # mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
         # app.logger.info(schemas.create_user.errors)
         return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
