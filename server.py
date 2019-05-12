@@ -192,6 +192,9 @@ def play_game():
         return jsonify(payload)
     return ('BAD REQUEST', 400)
 
+def send_mail(msg):
+    mail.send(msg)
+
 @app.route('/adduser', methods=['POST'])
 def add_user():
     if request.is_json:
@@ -219,7 +222,7 @@ def add_user():
                 recipients=[user_data['email']]
             )
             users.insert_one(user_data)
-            t = threading.Thread(target=mail.send, args=(msg, ))
+            t = threading.Thread(target=send_mail, args=(msg, ))
             t.start()
             t.run() # mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
