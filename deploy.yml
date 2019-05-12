@@ -32,9 +32,9 @@
     - name: Install Cassandra
       become: yes
       apt: name=cassandra state=latest update_cache=yes
-    # - name: Install RabbitMQ
-    #   become: yes
-    #   apt: name=rabbitmq-server state=latest update_cache=yes
+    - name: Install RabbitMQ
+      become: yes
+      apt: name=rabbitmq-server state=latest update_cache=yes
     # - name: install pip3
     #   become: yes
     #   apt: 
@@ -70,6 +70,9 @@
     - name: restart cassandra
       become: yes
       service: name=cassandra state=restarted
+    - name: restart rabbitmq-server
+      become: yes
+      service: name=rabbitmq-server state=restarted
       
 
 - hosts: frontends
@@ -103,9 +106,9 @@
     - name: reload postfix
       become: yes
       service: name=postfix state=reloaded
-    - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, cerberus, and cassandra-driver
+    - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, cerberus, cassandra-driver, and Celery
       become: yes
-      shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus cassandra-driver
+      shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus cassandra-driver Celery
       environment:
         CASS_DRIVER_NO_CYTHON: 1
     - name: copy conf file

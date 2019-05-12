@@ -25,6 +25,8 @@ from werkzeug.utils import secure_filename
 import schemas
 from static.RL_learn.learner import Game, Learner
 
+from celery import Celery
+
 here = os.path.dirname(__file__)
 sys.path.insert(0, here)
 
@@ -43,7 +45,12 @@ video_types = ['mp4']
 app = Flask(__name__, static_url_path='')
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+app.config['CELERY_BROKER_URL'] = 'amqp://64.190.90.55'
+app.config['CELERY_REQUEST_BACKEND'] = 'amqp://64.190.90.55'
 mail = Mail(app)
+celery = Celery(app.name, broker = app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
 agent = Learner(epsilon=0)
 agent.load_states(os.path.join(here, 'static/RL_learn/playero.pickle'))
 
@@ -192,7 +199,8 @@ def play_game():
         return jsonify(payload)
     return ('BAD REQUEST', 400)
 
-def send_mail(app, msg):
+@celery.task
+def send_mail(msg):
     with app.app_context():
         mail.send(msg)
 
@@ -223,8 +231,7 @@ def add_user():
                 recipients=[user_data['email']]
             )
             users.insert_one(user_data)
-            t = threading.Thread(target=send_mail, args=(app, msg))
-            t.start() # mail.send(msg)
+            send_mail.delay(msg) # mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
         # app.logger.info(schemas.create_user.errors)
         return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
