@@ -193,7 +193,8 @@ def play_game():
     return ('BAD REQUEST', 400)
 
 def send_mail(msg):
-    mail.send(msg)
+    with app.app_context():
+        mail.send(msg)
 
 @app.route('/adduser', methods=['POST'])
 def add_user():
