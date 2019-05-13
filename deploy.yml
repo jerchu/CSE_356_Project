@@ -111,9 +111,38 @@
       shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus cassandra-driver Celery
       environment:
         CASS_DRIVER_NO_CYTHON: 1
+    - name: copy celery service file
+      become: yes
+      copy: src=/var/www/server/celery.service dest=/etc/systemd/system/celeryd.service remote_src=yes
+    - name: copy celery conf file
+      become: yes
+      copy: src=/var/www/server/celery.conf dest=/etc/default/celeryd remote_src=yes
+    - name: create log dir
+      become: yes
+      file:
+        path: /var/log/celery
+        state: directory
+        owner: celery
+        group: celery
+    - name: create pid dir
+      become: yes
+      file:
+        path: /var/run/celery
+        state: directory
+        owner: celery
+        group: celery
+    - name: give owernship of log and pid dirs
+      become: yes
+      shell: chown celery:celery /var/log/celery /var/run/celery
     - name: copy conf file
       become: yes
       copy: src=/var/www/server/FlaskApp.conf dest=/etc/apache2/sites-available/server.conf remote_src=yes
+    - name: reload daemons
+      become: yes
+      shell: systemctl daemon-reload
+    - name: run celery at startup
+      become: yes
+      shell: systemctl enable celeryd
     - name: enable server
       become: yes
       command: a2ensite server.conf
@@ -125,6 +154,9 @@
     - name: restart apache
       become: yes
       service: name=apache2 state=restarted
+    - name: restart celery
+      become: yes
+      service: name=celeryd state=restarted
 
 - hosts: balancers
   gather_facts: False
