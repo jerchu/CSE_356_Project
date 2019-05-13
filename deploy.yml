@@ -156,12 +156,12 @@
     - name: disable default page
       become: yes
       command: a2dissite 000-default.conf
-    - name: restart celery
-      become: yes
-      service: name=celeryd state=restarted
     - name: restart rabbitmq-server
       become: yes
       service: name=rabbitmq-server state=restarted
+    - name: restart celery
+      become: yes
+      service: name=celeryd state=restarted
     - name: restart apache
       become: yes
       service: name=apache2 state=restarted
