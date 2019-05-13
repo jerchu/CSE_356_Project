@@ -200,8 +200,17 @@ def play_game():
     return ('BAD REQUEST', 400)
 
 @celery.task
-def send_mail(msg):
+def send_mail(user_data):
     with app.app_context():
+        msg = Message('Verify your StackUnderflow Account at {}'.format(hostname),
+                body=""" 
+                Thank you for creating a StackUnderflow account.
+                
+                In order to activate your account, please go to /verify and input the validation key: <{}>                
+                """.format(uuid2slug(user_data['verify_key'])),
+                sender='<root@localhost>',
+                recipients=[user_data['email']]
+            )
         mail.send(msg)
 
 @app.route('/adduser', methods=['POST'])
@@ -221,17 +230,8 @@ def add_user():
             user_data['verified'] = False
             user_data['password'] = bcrypt.hashpw(user_data['password'], bcrypt.gensalt())
             user_data['reputation'] = 1
-            msg = Message('Verify your StackUnderflow Account at {}'.format(hostname),
-                body=""" 
-                Thank you for creating a StackUnderflow account.
-                
-                In order to activate your account, please go to /verify and input the validation key: <{}>                
-                """.format(uuid2slug(user_data['verify_key'])),
-                sender='<root@localhost>',
-                recipients=[user_data['email']]
-            )
             users.insert_one(user_data)
-            send_mail.delay(msg) # mail.send(msg)
+            send_mail.delay(user_data) # mail.send(msg)
             return (jsonify({'status': 'OK'}), 201)#('OK', 201)
         # app.logger.info(schemas.create_user.errors)
         return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
