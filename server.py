@@ -45,8 +45,8 @@ video_types = ['mp4']
 app = Flask(__name__, static_url_path='')
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
-app.config['CELERY_BROKER_URL'] = 'pyamqp://guest@64.190.90.55'
-app.config['CELERY_REQUEST_BACKEND'] = 'pyamqp://guest@64.190.90.55'
+app.config['CELERY_BROKER_URL'] = 'pyamqp://guest@loaclhost'
+app.config['CELERY_REQUEST_BACKEND'] = 'pyamqp://guest@localhost'
 mail = Mail(app)
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)

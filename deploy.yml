@@ -106,6 +106,9 @@
     - name: reload postfix
       become: yes
       service: name=postfix state=reloaded
+    - name: Install RabbitMQ
+      become: yes
+      apt: name=rabbitmq-server state=latest update_cache=yes
     - name: install Flask, Flask-Mail, PyMongo, py-bcrypt, cerberus, cassandra-driver, and Celery
       become: yes
       shell: pip3 install flask Flask-Mail pymongo py-bcrypt cerberus cassandra-driver Celery
@@ -153,12 +156,15 @@
     - name: disable default page
       become: yes
       command: a2dissite 000-default.conf
-    - name: restart apache
-      become: yes
-      service: name=apache2 state=restarted
     - name: restart celery
       become: yes
       service: name=celeryd state=restarted
+    - name: restart rabbitmq-server
+      become: yes
+      service: name=rabbitmq-server state=restarted
+    - name: restart apache
+      become: yes
+      service: name=apache2 state=restarted
 
 - hosts: balancers
   gather_facts: False
