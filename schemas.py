@@ -76,7 +76,7 @@ search = Validator({
     'q':{
         'type': 'string',
     },
-    'sort_by':{
+    'sort':{
         'type': 'string',
         'allowed': ['timestamp', 'score'],
         'default': 'score',

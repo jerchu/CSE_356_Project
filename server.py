@@ -506,7 +506,7 @@ def search_questions():
             if 'q' in params and params['q'].strip() == "":
                 app.logger.info('\'{}\' is an empty string, ignoring'.format(params['q']))
             app.logger.info('query is {}'.format(params))
-            results = [x for x in questions.find(query, limit=params['limit']).sort(params['sort_by'], -1)]
+            results = [x for x in questions.find(query, limit=params['limit']).sort(params['sort'], -1)]
             app.logger.info('returned {} items'.format(len(results)))
             for question in results:
                 normalize_question_fields(question)
