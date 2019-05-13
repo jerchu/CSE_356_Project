@@ -672,9 +672,9 @@ def get_media(id):
     
 @app.route('/reset')
 def reset_databases():
-    questions.drop()
-    answers.drop()
-    users.drop()
+    questions.delete_many({})
+    answers.delete_many({})
+    users.delete_many({})
     sesh.execute("DROP TABLE IF EXISTS media")
     sesh.execute('CREATE TABLE IF NOT EXISTS media ( id uuid PRIMARY KEY, name text, user text, content blob )')
     return ('reset successful', 200)
