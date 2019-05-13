@@ -231,18 +231,18 @@ def add_user():
                 return (jsonify({'status': 'error', 'error': 'Username already exists'}), 409)
             if email is not None:
                 return (jsonify({'status': 'error', 'error': 'Email already exists'}), 409)
-            
-            add_user_async.delay(user_data) # mail.send(msg)
-            return (jsonify({'status': 'OK'}), 201)#('OK', 201)
-        # app.logger.info(schemas.create_user.errors)
-        return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
-    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
             user_data['_id'] = uuid.uuid4()
             user_data['verify_key'] = uuid.uuid4()
             user_data['verified'] = False
             user_data['password'] = bcrypt.hashpw(user_data['password'], bcrypt.gensalt())
             user_data['reputation'] = 1
             users.insert_one(user_data)
+            add_user_async.delay(user_data) # mail.send(msg)
+            return (jsonify({'status': 'OK'}), 201)#('OK', 201)
+        # app.logger.info(schemas.create_user.errors)
+        return (jsonify({'status': 'error', 'error': schemas.create_user.errors}), 422)
+    return (jsonify({'status': 'error', 'error': 'Request type must be JSON'}), 400)
+            
 
 @app.route('/verify', methods=['POST', 'GET'])
 def verify_user():
