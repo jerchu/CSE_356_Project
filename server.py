@@ -354,7 +354,7 @@ def normalize_question_fields(question):
 def undo_votes(item):
 
     amt = 0
-    for user, votes in item['voters']:
+    for votes in item['voters']:
         if 'waived' in votes and votes['waived'] and not votes['upvote']:
             pass
         else:
